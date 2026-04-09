@@ -66,6 +66,9 @@ Every rule references the official Reveal.js documentation. No rule exists witho
 | `background-opacity-range` | error | `data-background-opacity` must be between 0 and 1. |
 | `background-video-flags` | warn | `data-background-video-loop/muted` require `data-background-video`. |
 | `background-interactive-requires-iframe` | warn | `data-background-interactive` requires `data-background-iframe`. |
+| `valid-background-size` | warn | `data-background-size` must be valid CSS (cover, contain, length). |
+| `valid-background-position` | warn | `data-background-position` must be valid CSS (top, center, length). |
+| `valid-background-repeat` | warn | `data-background-repeat` must be: repeat, no-repeat, etc. |
 
 ### Auto-Animate
 
@@ -103,6 +106,7 @@ Every rule references the official Reveal.js documentation. No rule exists witho
 | `r-stretch-single` | error | Only one `r-stretch` element per slide. |
 | `r-stretch-direct-child` | error | `r-stretch` must be a direct child of `<section>`. |
 | `no-height-top-on-section` | warn | `<section>` should not have inline height/top/bottom. |
+| `r-stack-without-fragments` | warn | `r-stack` without fragment children — elements overlap. |
 
 ### Media
 
@@ -111,6 +115,8 @@ Every rule references the official Reveal.js documentation. No rule exists witho
 | `no-src-and-data-src` | warn | Element has both `src` and `data-src` — likely a mistake. |
 | `data-autoplay-on-media` | warn | `data-autoplay` only works on `<video>` and `<audio>`. |
 | `data-preload-needs-data-src` | warn | `data-preload` on `<iframe>` with `src` has no effect. |
+| `data-ignore-on-media` | warn | `data-ignore` only works on `<video>`, `<audio>`, `<iframe>`. |
+| `valid-preview-fit` | warn | `data-preview-fit` must be: scale-down, contain, cover. |
 
 ### Structure
 
@@ -127,6 +133,17 @@ Every rule references the official Reveal.js documentation. No rule exists witho
 | `notes-inside-section` | error | `<aside class="notes">` must be a direct child of `<section>`. |
 | `valid-timing-value` | error | `data-timing` must be a positive number (seconds). |
 | `duplicate-data-id` | error | Duplicate `data-id` in one slide — auto-animate can't match. |
+| `data-line-numbers-format` | error | `data-line-numbers` must be valid format (1,3-5 or 1\|2-3). |
+| `duplicate-notes` | warn | Slide has both `data-notes` and `<aside class="notes">`. |
+| `data-autoslide-on-fragment` | warn | `data-autoslide` on non-fragment element has no effect. |
+| `uncounted-not-at-end` | warn | `data-visibility="uncounted"` only works at the end. |
+| `unknown-data-attribute` | warn | Unknown Reveal.js `data-*` attribute — likely a typo. |
+
+### Links
+
+| Rule | Default | Description |
+|------|---------|-------------|
+| `broken-slide-link` | warn | Internal slide link (`#/...`) has invalid format or target not found. |
 
 ### CSS (theme files)
 

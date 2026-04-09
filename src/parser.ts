@@ -1,4 +1,14 @@
-import { parse, HTMLElement } from 'node-html-parser';
+import { parse, HTMLElement, Options } from 'node-html-parser';
+
+const PARSE_OPTIONS: Partial<Options> = {
+  // Parse content inside <pre>, <code>, <script> etc. so we can validate attributes
+  voidTag: {
+    tags: ['area', 'base', 'br', 'col', 'embed', 'hr', 'img', 'input', 'link', 'meta', 'param', 'source', 'track', 'wbr'],
+  },
+  blockTextElements: {
+    // Don't treat <pre> as raw text — we need to parse <code> inside it
+  },
+};
 
 export interface SlideElement {
   tag: string;
@@ -78,7 +88,7 @@ function toSlide(section: HTMLElement, index: number, isVertical: boolean): Slid
  * If sections are wrapped in a `.slides` container, only those are parsed.
  */
 export function parseSlides(html: string): ParseResult {
-  const root = parse(html);
+  const root = parse(html, PARSE_OPTIONS);
 
   // Look for .reveal .slides wrapper, or fall back to top-level sections
   const slidesContainer =

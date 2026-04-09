@@ -15,6 +15,9 @@ import './rules/layout.js';
 import './rules/media.js';
 import './rules/structure.js';
 import './rules/css.js';
+import './rules/attributes.js';
+import './rules/links.js';
+import './rules/extras.js';
 
 export { parseSlides } from './parser.js';
 export { parseCSS } from './css-parser.js';

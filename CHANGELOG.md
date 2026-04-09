@@ -1,5 +1,25 @@
 # Changelog
 
+## 0.5.0 (2026-04-09)
+
+### Added
+- **12 new rules** — comprehensive coverage of official Reveal.js docs
+  - `unknown-data-attribute` — catches typos in Reveal.js data-* attributes with suggestion for correction
+  - `broken-slide-link` — validates internal slide links (#/...) format
+  - `data-line-numbers-format` — validates code highlight format (1,3-5 or 1|2-3)
+  - `duplicate-notes` — warns about both data-notes and aside.notes on same slide
+  - `valid-background-size` — validates CSS background-size values
+  - `valid-background-position` — validates CSS background-position values
+  - `valid-background-repeat` — validates CSS background-repeat values
+  - `data-autoslide-on-fragment` — data-autoslide only works on section or fragments
+  - `uncounted-not-at-end` — data-visibility="uncounted" only works at the end
+  - `data-ignore-on-media` — data-ignore only on video/audio/iframe
+  - `r-stack-without-fragments` — r-stack needs fragment children to be useful
+  - `valid-preview-fit` — validates lightbox fit values
+
+### Fixed
+- Parser now correctly handles `<code>` elements inside `<pre>` (previously treated as raw text)
+
 ## 0.4.0 (2026-04-09)
 
 ### Added

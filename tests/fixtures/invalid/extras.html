@@ -1,0 +1,53 @@
+<div class="reveal">
+  <div class="slides">
+    <!-- ERROR: invalid data-line-numbers format -->
+    <section data-background-color="#000">
+      <pre><code data-line-numbers="1-2-3">bad format</code></pre>
+    </section>
+
+    <!-- WARN: duplicate notes -->
+    <section data-background-color="#000" data-notes="Note from attribute">
+      <h2>Both</h2>
+      <aside class="notes">Note from aside</aside>
+    </section>
+
+    <!-- WARN: invalid background-size -->
+    <section data-background-color="#000" data-background-image="bg.jpg" data-background-size="huge">
+      <h2>Bad size</h2>
+    </section>
+
+    <!-- WARN: invalid background-position -->
+    <section data-background-color="#000" data-background-image="bg.jpg" data-background-position="middle">
+      <h2>Bad position</h2>
+    </section>
+
+    <!-- WARN: invalid background-repeat -->
+    <section data-background-color="#000" data-background-image="bg.jpg" data-background-repeat="tile">
+      <h2>Bad repeat</h2>
+    </section>
+
+    <!-- WARN: data-autoslide on non-fragment -->
+    <section data-background-color="#000">
+      <div data-autoslide="2000">Not a fragment</div>
+    </section>
+
+    <!-- WARN: data-ignore on non-media -->
+    <section data-background-color="#000">
+      <div data-ignore>Not media</div>
+    </section>
+
+    <!-- WARN: r-stack without fragments -->
+    <section data-background-color="#000">
+      <div class="r-stack">
+        <img src="a.jpg" />
+        <img src="b.jpg" />
+        <img src="c.jpg" />
+      </div>
+    </section>
+
+    <!-- WARN: invalid data-preview-fit -->
+    <section data-background-color="#000">
+      <img src="photo.jpg" data-preview-image="photo-large.jpg" data-preview-fit="fill" />
+    </section>
+  </div>
+</div>
