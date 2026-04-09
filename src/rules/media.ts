@@ -24,6 +24,7 @@ const noSrcAndDataSrc: Rule = {
   description:
     'Element has both src and data-src — likely a mistake. Use data-src for lazy loading, or src for immediate loading.',
   docsReference: 'media.md — "To lazy load media, change src to data-src"',
+  fixHint: 'Remove src (keep data-src for lazy loading) or remove data-src',
   check(parsed: ParseResult): Violation[] {
     const violations: Violation[] = [];
     for (const slide of parsed.flatSlides) {
@@ -59,6 +60,7 @@ const dataAutoplayOnMedia: Rule = {
   defaultSeverity: 'warn',
   description: 'data-autoplay is only meaningful on <video> and <audio> elements.',
   docsReference: 'media.md — "Add data-autoplay to your media element"',
+  fixHint: 'Move data-autoplay to a <video> or <audio> element',
   check(parsed: ParseResult): Violation[] {
     const violations: Violation[] = [];
     for (const slide of parsed.flatSlides) {
@@ -94,6 +96,7 @@ const dataPreloadNeedsDataSrc: Rule = {
   description:
     'data-preload on <iframe> with src (not data-src) has no effect — the iframe already loads immediately.',
   docsReference: 'media.md — "If you\'d like to preload lazy-loaded iframes, you can use data-preload"',
+  fixHint: 'Change src to data-src for lazy loading, then data-preload will work',
   check(parsed: ParseResult): Violation[] {
     const violations: Violation[] = [];
     for (const slide of parsed.flatSlides) {

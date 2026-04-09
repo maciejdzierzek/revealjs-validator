@@ -67,6 +67,7 @@ const cssNoBackgroundOnReveal: CSSValidationRule = {
   description:
     'CSS background on .reveal or .reveal-viewport hides the background from Reveal.js. Use data-background-color on <section> elements instead.',
   docsReference: 'backgrounds.md — backgrounds must be data-background-* on <section>',
+  fixHint: 'Remove this line. Set background on each <section> with data-background-color.',
   check(parsed: CSSParseResult): CSSViolation[] {
     const violations: CSSViolation[] = [];
 
@@ -127,6 +128,7 @@ const cssNoBackgroundOnSection: CSSValidationRule = {
   description:
     'CSS background on section selectors conflicts with Reveal.js data-background-* attributes. Use data-background-color on <section> elements.',
   docsReference: 'backgrounds.md — backgrounds only via data-background-* attributes',
+  fixHint: 'Remove CSS background. Use data-background-color on <section> elements.',
   check(parsed: CSSParseResult): CSSViolation[] {
     const violations: CSSViolation[] = [];
 
@@ -173,6 +175,7 @@ const cssNoTransitionOnAnimated: CSSValidationRule = {
   description:
     'CSS transition property can conflict with Reveal.js auto-animate. Auto-animate manages its own transitions internally.',
   docsReference: 'auto-animate.md — "internally reveal.js will use a CSS transform"',
+  fixHint: 'Remove CSS transition. Reveal.js auto-animate handles transitions.',
   check(parsed: CSSParseResult): CSSViolation[] {
     const violations: CSSViolation[] = [];
 
@@ -240,6 +243,7 @@ const cssNoDeadKeyframes: CSSValidationRule = {
   description:
     'Unused @keyframes definition — not referenced by any animation property in this CSS file.',
   docsReference: 'fragments.md / auto-animate.md — Reveal.js has native animation alternatives',
+  fixHint: 'Remove this @keyframes block, or reference it with animation: property.',
   check(parsed: CSSParseResult): CSSViolation[] {
     const violations: CSSViolation[] = [];
 

@@ -28,6 +28,7 @@ const autoAnimatePairs: Rule = {
   description:
     'data-auto-animate requires an adjacent slide (previous or next) with the same attribute for animation to work.',
   docsReference: 'auto-animate.md — "add data-auto-animate to two adjacent slide <section> elements"',
+  fixHint: 'Add data-auto-animate to the adjacent slide, or remove it from this slide',
   check(parsed: ParseResult): Violation[] {
     const violations: Violation[] = [];
     const flat = parsed.flatSlides;
@@ -83,6 +84,7 @@ const autoAnimateOnSection: Rule = {
   defaultSeverity: 'error',
   description: 'data-auto-animate is only valid on <section> elements.',
   docsReference: 'auto-animate.md — all examples use <section data-auto-animate>',
+  fixHint: 'Move data-auto-animate to the parent <section> element',
   check(parsed: ParseResult): Violation[] {
     const violations: Violation[] = [];
     for (const slide of parsed.flatSlides) {
@@ -116,6 +118,7 @@ const dataIdNeedsAutoAnimate: Rule = {
   defaultSeverity: 'warn',
   description: 'data-id on elements in a slide without data-auto-animate has no effect.',
   docsReference: 'auto-animate.md — "How Elements are Matched"',
+  fixHint: 'Add data-auto-animate to this <section>, or remove data-id',
   check(parsed: ParseResult): Violation[] {
     const violations: Violation[] = [];
     for (const slide of parsed.flatSlides) {
@@ -153,6 +156,7 @@ const dataIdInlineStyles: Rule = {
   description:
     'Elements with data-id in auto-animated slides should use inline style for animated properties.',
   docsReference: 'auto-animate.md — all animation examples use inline style=',
+  fixHint: 'Add style="..." with animated properties (font-size, width, etc.) to this element',
   check(parsed: ParseResult): Violation[] {
     const violations: Violation[] = [];
     for (const slide of parsed.flatSlides) {
@@ -190,6 +194,7 @@ const autoAnimateDelayNotOnSection: Rule = {
   description:
     'data-auto-animate-delay only works on child elements, not on <section>.',
   docsReference: 'auto-animate.md — element-level animation settings',
+  fixHint: 'Move data-auto-animate-delay to a child element, not <section>',
   check(parsed: ParseResult): Violation[] {
     const violations: Violation[] = [];
     for (const slide of parsed.flatSlides) {
@@ -220,6 +225,7 @@ const autoAnimateRestartNeedsAutoAnimate: Rule = {
   defaultSeverity: 'warn',
   description: 'data-auto-animate-restart without data-auto-animate has no effect.',
   docsReference: 'auto-animate.md — animation restart',
+  fixHint: 'Add data-auto-animate to this <section>, or remove data-auto-animate-restart',
   check(parsed: ParseResult): Violation[] {
     const violations: Violation[] = [];
     for (const slide of parsed.flatSlides) {
@@ -249,6 +255,7 @@ const autoAnimateIdNeedsAutoAnimate: Rule = {
   defaultSeverity: 'warn',
   description: 'data-auto-animate-id without data-auto-animate has no effect.',
   docsReference: 'auto-animate.md — animation grouping with data-auto-animate-id',
+  fixHint: 'Add data-auto-animate to this <section>, or remove data-auto-animate-id',
   check(parsed: ParseResult): Violation[] {
     const violations: Violation[] = [];
     for (const slide of parsed.flatSlides) {
@@ -280,6 +287,7 @@ const duplicateDataId: Rule = {
   defaultSeverity: 'error',
   description: 'Duplicate data-id in one slide — auto-animate cannot determine which element to animate.',
   docsReference: 'auto-animate.md — "How Elements are Matched"',
+  fixHint: 'Give each element a unique data-id within the same slide',
   check(parsed: ParseResult): Violation[] {
     const violations: Violation[] = [];
     for (const slide of parsed.flatSlides) {

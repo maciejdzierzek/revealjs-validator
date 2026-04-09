@@ -51,6 +51,7 @@ const validTransitionValues: Rule = {
   description:
     'data-transition must use valid values: none, fade, slide, convex, concave, zoom (with optional -in/-out suffixes).',
   docsReference: 'transitions.md — transition types',
+  fixHint: 'Use: none, fade, slide, convex, concave, zoom (optional: -in/-out suffix)',
   check(parsed: ParseResult): Violation[] {
     const violations: Violation[] = [];
     for (const slide of parsed.flatSlides) {
@@ -92,6 +93,7 @@ const validTransitionSpeed: Rule = {
   defaultSeverity: 'error',
   description: 'data-transition-speed must be: default, fast, or slow.',
   docsReference: 'transitions.md — transition speed',
+  fixHint: 'Use: default, fast, or slow',
   check(parsed: ParseResult): Violation[] {
     const violations: Violation[] = [];
     for (const slide of parsed.flatSlides) {
@@ -123,6 +125,7 @@ const transitionOnSection: Rule = {
   description:
     'data-transition and data-transition-speed are only valid on <section> elements.',
   docsReference: 'transitions.md — all examples use <section>',
+  fixHint: 'Move transition attribute to the parent <section> element',
   check(parsed: ParseResult): Violation[] {
     const violations: Violation[] = [];
     const transAttrs = ['data-transition', 'data-transition-speed', 'data-background-transition'];

@@ -8,6 +8,8 @@ export interface Violation {
   slideIndex: number;
   /** Line excerpt or element description for context */
   context?: string;
+  /** Per-violation fix hint (overrides rule-level fixHint if set) */
+  fixHint?: string;
 }
 
 export interface Rule {
@@ -18,6 +20,8 @@ export interface Rule {
   description: string;
   /** Reference to official Reveal.js docs (file in docs/source/) */
   docsReference: string;
+  /** Default fix hint for all violations of this rule */
+  fixHint?: string;
   check(parsed: ParseResult): Violation[];
   /**
    * Auto-fix: transform source string to fix the violation.

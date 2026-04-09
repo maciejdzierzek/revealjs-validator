@@ -25,6 +25,7 @@ const configValidTransition: ConfigRule = {
   defaultSeverity: 'error',
   description: 'transition must be: none, fade, slide, convex, concave, or zoom.',
   docsReference: 'config.md — transition option',
+  fixHint: 'Use: none, fade, slide, convex, concave, or zoom',
   check(config: Record<string, unknown>): ConfigViolation[] {
     const val = config['transition'];
     if (val === undefined) return [];
@@ -46,6 +47,7 @@ const configValidTransitionSpeed: ConfigRule = {
   defaultSeverity: 'error',
   description: 'transitionSpeed must be: default, fast, or slow.',
   docsReference: 'config.md — transitionSpeed option',
+  fixHint: 'Use: default, fast, or slow',
   check(config: Record<string, unknown>): ConfigViolation[] {
     const val = config['transitionSpeed'];
     if (val === undefined) return [];
@@ -67,6 +69,7 @@ const configValidBackgroundTransition: ConfigRule = {
   defaultSeverity: 'error',
   description: 'backgroundTransition must be: none, fade, slide, convex, concave, or zoom.',
   docsReference: 'config.md — backgroundTransition option',
+  fixHint: 'Use: none, fade, slide, convex, concave, or zoom',
   check(config: Record<string, unknown>): ConfigViolation[] {
     const val = config['backgroundTransition'];
     if (val === undefined) return [];
@@ -88,6 +91,7 @@ const configWidthHeightNumeric: ConfigRule = {
   defaultSeverity: 'error',
   description: 'width and height must be numeric (pixels).',
   docsReference: 'config.md — width/height options',
+  fixHint: 'Set to a positive number in pixels (e.g., 1280)',
   check(config: Record<string, unknown>): ConfigViolation[] {
     const violations: ConfigViolation[] = [];
     for (const prop of ['width', 'height'] as const) {
@@ -112,6 +116,7 @@ const configMarginRange: ConfigRule = {
   defaultSeverity: 'error',
   description: 'margin must be between 0.0 and 1.0.',
   docsReference: 'config.md — margin option',
+  fixHint: 'Set to a value between 0 and 1 (e.g., 0.06)',
   check(config: Record<string, unknown>): ConfigViolation[] {
     const val = config['margin'];
     if (val === undefined) return [];
@@ -133,6 +138,7 @@ const configMinMaxScale: ConfigRule = {
   defaultSeverity: 'error',
   description: 'minScale and maxScale must be positive, and minScale < maxScale.',
   docsReference: 'config.md — minScale/maxScale options',
+  fixHint: 'Set to positive numbers where minScale < maxScale',
   check(config: Record<string, unknown>): ConfigViolation[] {
     const violations: ConfigViolation[] = [];
     const min = config['minScale'];
@@ -165,6 +171,7 @@ const configAutoSlideNumeric: ConfigRule = {
   defaultSeverity: 'error',
   description: 'autoSlide must be a non-negative number (milliseconds). 0 = disabled.',
   docsReference: 'config.md — autoSlide option',
+  fixHint: 'Set to milliseconds (e.g., 5000) or 0 to disable',
   check(config: Record<string, unknown>): ConfigViolation[] {
     const val = config['autoSlide'];
     if (val === undefined || val === false) return []; // false = disabled
@@ -186,6 +193,7 @@ const configNavigationMode: ConfigRule = {
   defaultSeverity: 'error',
   description: 'navigationMode must be: default, linear, or grid.',
   docsReference: 'config.md — navigationMode option',
+  fixHint: 'Use: default, linear, or grid',
   check(config: Record<string, unknown>): ConfigViolation[] {
     const val = config['navigationMode'];
     if (val === undefined) return [];
@@ -207,6 +215,7 @@ const configViewMode: ConfigRule = {
   defaultSeverity: 'error',
   description: 'view must be undefined (default) or "scroll".',
   docsReference: 'scroll-view.md — "view" config option',
+  fixHint: 'Use: "scroll" or remove the property',
   check(config: Record<string, unknown>): ConfigViolation[] {
     const val = config['view'];
     if (val === undefined) return [];

@@ -15,6 +15,7 @@ const rStretchSingle: Rule = {
   defaultSeverity: 'error',
   description: 'Only one element with class "r-stretch" is allowed per slide.',
   docsReference: 'layout.md — "Only a single element per slide can be stretched"',
+  fixHint: 'Keep only one r-stretch element per slide',
   check(parsed: ParseResult): Violation[] {
     const violations: Violation[] = [];
     for (const slide of parsed.flatSlides) {
@@ -55,6 +56,7 @@ const rStretchDirectChild: Rule = {
   defaultSeverity: 'error',
   description: 'Elements with class "r-stretch" must be direct children of <section>.',
   docsReference: 'layout.md — "Only direct descendants of a slide section can be stretched"',
+  fixHint: 'Move this element to be a direct child of <section>',
   check(parsed: ParseResult): Violation[] {
     const violations: Violation[] = [];
     for (const slide of parsed.flatSlides) {
@@ -92,6 +94,7 @@ const noHeightTopOnSection: Rule = {
   description:
     '<section> should not have inline height, top, or bottom — Reveal.js sets these for centering.',
   docsReference: 'presentation-size.md — Reveal.js manages slide dimensions',
+  fixHint: 'Remove height/top/bottom from style. Use min-height if needed.',
   check(parsed: ParseResult): Violation[] {
     const violations: Violation[] = [];
     for (const slide of parsed.flatSlides) {

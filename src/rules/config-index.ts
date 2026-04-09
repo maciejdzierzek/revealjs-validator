@@ -13,6 +13,7 @@ export interface ConfigRule {
   defaultSeverity: Severity;
   description: string;
   docsReference: string;
+  fixHint?: string;
   check(config: Record<string, unknown>): ConfigViolation[];
 }
 

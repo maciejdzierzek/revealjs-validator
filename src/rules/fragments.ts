@@ -48,6 +48,7 @@ const validFragmentClasses: Rule = {
   description:
     'Fragment effect classes (fade-out, grow, etc.) require the base "fragment" class to work.',
   docsReference: 'fragments.md — "Every element with the class fragment"',
+  fixHint: 'Add class="fragment" to this element',
   check(parsed: ParseResult): Violation[] {
     const violations: Violation[] = [];
     for (const slide of parsed.flatSlides) {
@@ -89,6 +90,7 @@ const knownFragmentEffect: Rule = {
   description:
     'Unknown fragment effect class without "custom" — might be a typo. Use "custom" class for non-standard effects.',
   docsReference: 'fragments.md — built-in fragment effects list + custom fragments',
+  fixHint: 'Check spelling, or add "custom" class for non-standard effects',
   check(parsed: ParseResult): Violation[] {
     const violations: Violation[] = [];
     // Classes that are not effects and should be ignored
@@ -137,6 +139,7 @@ const fragmentIndexNumeric: Rule = {
   defaultSeverity: 'error',
   description: 'data-fragment-index must be a non-negative integer.',
   docsReference: 'fragments.md — "data-fragment-index attribute"',
+  fixHint: 'Set data-fragment-index to a non-negative integer (0, 1, 2, ...)',
   check(parsed: ParseResult): Violation[] {
     const violations: Violation[] = [];
     for (const slide of parsed.flatSlides) {
@@ -171,6 +174,7 @@ const fragmentIndexNeedsFragment: Rule = {
   defaultSeverity: 'warn',
   description: 'data-fragment-index without the "fragment" class has no effect.',
   docsReference: 'fragments.md — fragment ordering',
+  fixHint: 'Add class="fragment" to this element, or remove data-fragment-index',
   check(parsed: ParseResult): Violation[] {
     const violations: Violation[] = [];
     for (const slide of parsed.flatSlides) {

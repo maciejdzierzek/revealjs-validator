@@ -31,6 +31,7 @@ const dataLineNumbersFormat: Rule = {
   defaultSeverity: 'error',
   description: 'data-line-numbers has invalid format. Use: "1,3-5" or "1|2-3|4,6-10" for step-by-step highlights.',
   docsReference: 'code.md — "data-line-numbers" format',
+  fixHint: 'Use: numbers (3), ranges (3-5), commas (1,3,5), or pipes for steps (1|2-3|4)',
   check(parsed: ParseResult): Violation[] {
     const violations: Violation[] = [];
     for (const slide of parsed.flatSlides) {
@@ -63,6 +64,7 @@ const duplicateNotes: Rule = {
   defaultSeverity: 'warn',
   description: 'Slide has both data-notes attribute and <aside class="notes"> — redundant. Use one approach.',
   docsReference: 'speaker-view.md — two ways to add notes',
+  fixHint: 'Use either data-notes="..." OR <aside class="notes">, not both',
   check(parsed: ParseResult): Violation[] {
     const violations: Violation[] = [];
     for (const slide of parsed.flatSlides) {
@@ -100,6 +102,7 @@ const validBackgroundSize: Rule = {
   defaultSeverity: 'warn',
   description: 'data-background-size must be valid CSS: cover, contain, auto, or a length/percentage.',
   docsReference: 'backgrounds.md — data-background-size',
+  fixHint: 'Use: cover, contain, auto, or CSS length (100px, 50%)',
   check(parsed: ParseResult): Violation[] {
     const violations: Violation[] = [];
     for (const slide of parsed.flatSlides) {
@@ -138,6 +141,7 @@ const validBackgroundPosition: Rule = {
   defaultSeverity: 'warn',
   description: 'data-background-position must be valid CSS: top, bottom, left, right, center, or length/percentage.',
   docsReference: 'backgrounds.md — data-background-position',
+  fixHint: 'Use: top, bottom, left, right, center, or CSS length',
   check(parsed: ParseResult): Violation[] {
     const violations: Violation[] = [];
     for (const slide of parsed.flatSlides) {
@@ -175,6 +179,7 @@ const validBackgroundRepeat: Rule = {
   defaultSeverity: 'warn',
   description: 'data-background-repeat must be: repeat, repeat-x, repeat-y, no-repeat, space, or round.',
   docsReference: 'backgrounds.md — data-background-repeat',
+  fixHint: 'Use: repeat, repeat-x, repeat-y, no-repeat, space, round',
   check(parsed: ParseResult): Violation[] {
     const violations: Violation[] = [];
     for (const slide of parsed.flatSlides) {
@@ -206,6 +211,7 @@ const dataAutoslideOnFragment: Rule = {
   defaultSeverity: 'warn',
   description: 'data-autoslide on an element without class="fragment" has no effect. Only works on <section> or fragments.',
   docsReference: 'auto-slide.md — "individual slides and fragments"',
+  fixHint: 'Add class="fragment" to this element, or move data-autoslide to <section>',
   check(parsed: ParseResult): Violation[] {
     const violations: Violation[] = [];
     for (const slide of parsed.flatSlides) {
@@ -238,6 +244,7 @@ const uncountedNotAtEnd: Rule = {
   defaultSeverity: 'warn',
   description: 'data-visibility="uncounted" only works on slides at the end, after all main slides.',
   docsReference: 'slide-visibility.md — "only works for slides at the end"',
+  fixHint: 'Move data-visibility="uncounted" slides to the end',
   check(parsed: ParseResult): Violation[] {
     const violations: Violation[] = [];
     const flat = parsed.flatSlides;
@@ -281,6 +288,7 @@ const dataIgnoreOnMedia: Rule = {
   defaultSeverity: 'warn',
   description: 'data-ignore only works on <video>, <audio>, and <iframe>. On other elements it does nothing.',
   docsReference: 'media.md — "decorating your element with a data-ignore attribute"',
+  fixHint: 'Move data-ignore to a <video>, <audio>, or <iframe> element',
   check(parsed: ParseResult): Violation[] {
     const violations: Violation[] = [];
     for (const slide of parsed.flatSlides) {
@@ -314,6 +322,7 @@ const rStackWithoutFragments: Rule = {
   defaultSeverity: 'warn',
   description: 'r-stack without fragment children — all elements will be stacked on top of each other with no way to reveal them.',
   docsReference: 'layout.md — "intended to be used together with fragments"',
+  fixHint: 'Add class="fragment" to children inside r-stack',
   check(parsed: ParseResult): Violation[] {
     const violations: Violation[] = [];
     for (const slide of parsed.flatSlides) {
@@ -350,6 +359,7 @@ const validPreviewFit: Rule = {
   defaultSeverity: 'warn',
   description: 'data-preview-fit must be: scale-down, contain, or cover.',
   docsReference: 'lightbox.md — data-preview-fit values',
+  fixHint: 'Use: scale-down, contain, or cover',
   check(parsed: ParseResult): Violation[] {
     const violations: Violation[] = [];
     for (const slide of parsed.flatSlides) {

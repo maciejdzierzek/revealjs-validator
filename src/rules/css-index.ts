@@ -16,6 +16,7 @@ export interface CSSValidationRule {
   defaultSeverity: Severity;
   description: string;
   docsReference: string;
+  fixHint?: string;
   check(parsed: CSSParseResult): CSSViolation[];
   /** Auto-fix: transform CSS source to fix the violation. Returns modified source, or null. */
   fix?: (source: string, violation: CSSViolation) => string | null;

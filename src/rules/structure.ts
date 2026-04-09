@@ -25,6 +25,7 @@ const noInlineTransitionCss: Rule = {
   description:
     'Inline CSS "transition:" property can conflict with Reveal.js auto-animate. Use data-auto-animate instead.',
   docsReference: 'auto-animate.md — Reveal.js uses CSS transforms internally',
+  fixHint: 'Remove CSS transition from inline style. Use data-auto-animate instead.',
   check(parsed: ParseResult): Violation[] {
     const violations: Violation[] = [];
     for (const slide of parsed.flatSlides) {
@@ -60,6 +61,7 @@ const noDisplayNoneOnSection: Rule = {
   description:
     'Use data-visibility="hidden" instead of inline CSS display:none or visibility:hidden on <section>.',
   docsReference: 'slide-visibility.md — "add data-visibility=\\"hidden\\""',
+  fixHint: 'Replace with data-visibility="hidden" on <section>',
   check(parsed: ParseResult): Violation[] {
     const violations: Violation[] = [];
     for (const slide of parsed.flatSlides) {
@@ -94,6 +96,7 @@ const validDataVisibility: Rule = {
   defaultSeverity: 'error',
   description: 'data-visibility must be "hidden" or "uncounted".',
   docsReference: 'slide-visibility.md — valid data-visibility values',
+  fixHint: 'Use: hidden or uncounted',
   check(parsed: ParseResult): Violation[] {
     const violations: Violation[] = [];
     for (const slide of parsed.flatSlides) {
@@ -125,6 +128,7 @@ const validAutoslideValue: Rule = {
   defaultSeverity: 'error',
   description: 'data-autoslide must be a numeric value in milliseconds.',
   docsReference: 'auto-slide.md — "data-autoslide attribute"',
+  fixHint: 'Set data-autoslide to milliseconds (e.g., 2000 for 2 seconds)',
   check(parsed: ParseResult): Violation[] {
     const violations: Violation[] = [];
     for (const slide of parsed.flatSlides) {
@@ -176,6 +180,7 @@ const verticalSlidesNesting: Rule = {
   defaultSeverity: 'error',
   description: 'Vertical slides must be exactly one level deep — <section> inside <section>. Triple nesting is invalid.',
   docsReference: 'vertical-slides.md — vertical slide markup',
+  fixHint: 'Remove extra nesting. Max: <section><section>content</section></section>',
   check(parsed: ParseResult): Violation[] {
     const violations: Violation[] = [];
     for (const slide of parsed.slides) {
@@ -209,6 +214,7 @@ const markdownRequiresScript: Rule = {
   defaultSeverity: 'error',
   description: '<section data-markdown> requires a <script type="text/template"> child. Without it, markdown renders as raw text.',
   docsReference: 'markdown.md — markdown section markup',
+  fixHint: 'Add <script type="text/template">...markdown...</script> inside <section>',
   check(parsed: ParseResult): Violation[] {
     const violations: Violation[] = [];
     for (const slide of parsed.flatSlides) {
@@ -248,6 +254,7 @@ const codeLineNumbersStructure: Rule = {
   defaultSeverity: 'error',
   description: 'data-line-numbers must be on a <code> element inside <pre>.',
   docsReference: 'code.md — "adding data-line-numbers to your <code> tags"',
+  fixHint: 'Move data-line-numbers to the <code> element inside <pre>',
   check(parsed: ParseResult): Violation[] {
     const violations: Violation[] = [];
     for (const slide of parsed.flatSlides) {
@@ -281,6 +288,7 @@ const notesInsideSection: Rule = {
   defaultSeverity: 'error',
   description: '<aside class="notes"> must be inside a <section> slide. Speaker notes outside slides are ignored.',
   docsReference: 'speaker-view.md — "adding an <aside class=\\"notes\\"> element"',
+  fixHint: 'Move <aside class="notes"> to be a direct child of <section>',
   check(parsed: ParseResult): Violation[] {
     // This rule checks the raw parsed structure. If an <aside class="notes">
     // appears as a direct child of .slides (not inside a section), it's wrong.
@@ -331,6 +339,7 @@ const validTimingValue: Rule = {
   defaultSeverity: 'error',
   description: 'data-timing must be a numeric value in seconds.',
   docsReference: 'speaker-view.md — "data-timing attribute (in seconds)"',
+  fixHint: 'Set data-timing to seconds (e.g., 60 for one minute)',
   check(parsed: ParseResult): Violation[] {
     const violations: Violation[] = [];
     for (const slide of parsed.flatSlides) {

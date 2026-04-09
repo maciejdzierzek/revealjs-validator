@@ -1,5 +1,12 @@
 # Changelog
 
+## 0.13.0 (2026-04-09)
+
+### Added
+- **Fix hints** — every rule now shows a concrete `Fix:` line under the violation message, telling you exactly what to change. Works for all 66 rules across HTML, CSS, config, and cross-file categories.
+- `fixHint` property on Rule, CSSValidationRule, ConfigRule interfaces
+- Per-violation `fixHint` override (on Violation interface) for context-specific hints
+
 ## 0.12.0 (2026-04-09)
 
 ### Breaking
