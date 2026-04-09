@@ -218,7 +218,7 @@ async function main(): Promise<void> {
   }
 
   // Normal validation mode
-  const results: { file: string; result: ValidationResult | CSSValidationResult }[] = [];
+  const results: { file: string; result: ValidationResult | CSSValidationResult | ConfigValidationResult }[] = [];
   let hasErrors = false;
 
   for (const file of resolvedFiles) {
