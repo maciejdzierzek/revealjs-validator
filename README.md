@@ -161,6 +161,27 @@ Validates `.css` files alongside HTML slides. Pass CSS files directly or mix wit
 revealjs-validator "slides/*.html" "theme/*.css"
 ```
 
+## Pre-commit hook
+
+Validate only staged files — perfect for git pre-commit hooks:
+
+```bash
+revealjs-validator --staged
+```
+
+Returns exit 0 if no staged `.html`/`.css` files (nothing to validate). Returns exit 1 if any errors found — blocks the commit.
+
+Example `.githooks/pre-commit`:
+
+```sh
+#!/bin/sh
+npx revealjs-validator --staged
+if [ $? -ne 0 ]; then
+  echo "Fix Reveal.js errors before committing."
+  exit 1
+fi
+```
+
 ## Configuration
 
 Create a `.revealjs-validator.json` in your project root:

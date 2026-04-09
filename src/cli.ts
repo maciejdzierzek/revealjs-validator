@@ -8,6 +8,7 @@ import { loadConfig } from './config.js';
 import { format } from './reporter.js';
 import { getRegisteredRules } from './rules/index.js';
 import { getRegisteredCSSRules } from './rules/css-index.js';
+import { getStagedFiles } from './staged.js';
 import type { OutputFormat } from './reporter.js';
 import type { ValidationResult } from './rules/index.js';
 import type { CSSValidationResult } from './rules/css-index.js';
@@ -22,6 +23,7 @@ Usage:
 Options:
   --config <path>   Path to config file (default: .revealjs-validator.json)
   --format <type>   Output format: text, json (default: text)
+  --staged          Validate only git-staged .html and .css files (for pre-commit hooks)
   --list-rules      List all available rules and exit
   --help, -h        Show this help message
   --version, -v     Show version
@@ -31,6 +33,7 @@ Supports both HTML slide files and CSS theme files.
 Examples:
   revealjs-validator "slides/*.html"
   revealjs-validator "slides/*.html" "theme/*.css"
+  revealjs-validator --staged                          # pre-commit hook
   revealjs-validator --format json "slides/**/*.html"
   revealjs-validator --config my-config.json slides/
 `.trim());
@@ -73,6 +76,7 @@ function parseArgs(argv: string[]): {
   help: boolean;
   version: boolean;
   listRulesFlag: boolean;
+  staged: boolean;
 } {
   const files: string[] = [];
   let configPath: string | undefined;
@@ -80,6 +84,7 @@ function parseArgs(argv: string[]): {
   let help = false;
   let version = false;
   let listRulesFlag = false;
+  let staged = false;
 
   let i = 0;
   while (i < argv.length) {
@@ -90,6 +95,8 @@ function parseArgs(argv: string[]): {
       version = true;
     } else if (arg === '--list-rules') {
       listRulesFlag = true;
+    } else if (arg === '--staged') {
+      staged = true;
     } else if (arg === '--config' && i + 1 < argv.length) {
       configPath = argv[++i];
     } else if (arg === '--format' && i + 1 < argv.length) {
@@ -109,7 +116,7 @@ function parseArgs(argv: string[]): {
     i++;
   }
 
-  return { files, configPath, outputFormat, help, version, listRulesFlag };
+  return { files, configPath, outputFormat, help, version, listRulesFlag, staged };
 }
 
 async function main(): Promise<void> {
@@ -128,19 +135,28 @@ async function main(): Promise<void> {
     process.exit(0);
   }
 
-  if (args.files.length === 0) {
+  if (!args.staged && args.files.length === 0) {
     console.error('Error: No files specified. Run with --help for usage.');
     process.exit(1);
   }
 
   const config = loadConfig(args.configPath);
 
-  // Expand globs
-  const resolvedFiles = await glob(args.files, config.ignore);
-
-  if (resolvedFiles.length === 0) {
-    console.error('Error: No matching files found.');
-    process.exit(1);
+  // Resolve files: --staged from git, otherwise from globs
+  let resolvedFiles: string[];
+  if (args.staged) {
+    resolvedFiles = getStagedFiles();
+    if (resolvedFiles.length === 0) {
+      // No staged HTML/CSS files — nothing to validate, not an error
+      console.log('No staged .html or .css files to validate.');
+      process.exit(0);
+    }
+  } else {
+    resolvedFiles = await glob(args.files, config.ignore);
+    if (resolvedFiles.length === 0) {
+      console.error('Error: No matching files found.');
+      process.exit(1);
+    }
   }
 
   const results: { file: string; result: ValidationResult | CSSValidationResult }[] = [];
