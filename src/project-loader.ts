@@ -22,6 +22,8 @@ export interface ProjectContext {
   slides: SlideEntry[];
   /** CSS theme files found */
   cssFiles: string[];
+  /** Subset of cssFiles that are platform base CSS (classes-only: provide classes but skip dead-code and per-file CSS rules) */
+  cssBaseFiles: Set<string>;
   /** Assets directory (if exists) */
   assetsDir: string | null;
 }
@@ -108,11 +110,15 @@ export function loadProject(
   }
 
   // Add base CSS files from crosscheck config (e.g., platform base styles)
-  const baseCSSFiles = validatorConfig?.crosscheck?.['css-base-files'] ?? [];
-  for (const baseFile of baseCSSFiles) {
+  // Base files provide classes for cross-css-classes-used but are excluded from
+  // per-file CSS rules and cross-css-classes-defined (they serve multiple games).
+  const cssBaseFiles = new Set<string>();
+  const baseCSSEntries = validatorConfig?.crosscheck?.['css-base-files'] ?? [];
+  for (const baseFile of baseCSSEntries) {
     const resolved = resolve(baseFile);
     if (existsSync(resolved) && !cssFiles.includes(resolved)) {
       cssFiles.push(resolved);
+      cssBaseFiles.add(resolved);
     }
   }
 
@@ -126,6 +132,7 @@ export function loadProject(
     revealConfig,
     slides,
     cssFiles,
+    cssBaseFiles,
     assetsDir,
   };
 }

@@ -30,7 +30,7 @@ export interface CrossFileContext {
   /** Parsed slides in config.json order */
   slides: { file: string; slideId?: string; parsed: ParseResult }[];
   /** Parsed CSS files */
-  css: { file: string; parsed: CSSParseResult }[];
+  css: { file: string; parsed: CSSParseResult; isBaseFile: boolean }[];
 }
 
 export interface CrossFileResult {

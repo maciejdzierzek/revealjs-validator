@@ -146,12 +146,13 @@ export function validateProject(
     };
   });
 
-  // Parse all CSS
+  // Parse all CSS (mark base files so they can be skipped in per-file and dead-code checks)
   const parsedCSS = project.cssFiles.map((file) => {
     const css = readFileSync(file, 'utf-8');
     return {
       file: file.replace(project.dir + '/', ''),
       parsed: parseCSS(css),
+      isBaseFile: project.cssBaseFiles.has(file),
     };
   });
 
@@ -162,9 +163,10 @@ export function validateProject(
     perFileResults.push({ file: slide.file, result });
   }
 
-  // Per-file CSS validation
+  // Per-file CSS validation (skip base files — they are platform infrastructure, not game theme)
   const perFileCSSResults: { file: string; result: CSSValidationResult }[] = [];
   for (const css of parsedCSS) {
+    if (css.isBaseFile) continue;
     const result = runCSSRules(css.parsed, adjustedRuleConfig);
     perFileCSSResults.push({ file: css.file, result });
   }

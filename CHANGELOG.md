@@ -1,5 +1,16 @@
 # Changelog
 
+## 0.16.0 (2026-04-09)
+
+### Added
+- **`css-base-files` classes-only mode** — base CSS files from `crosscheck.css-base-files` now provide classes for `cross-css-classes-used` but are excluded from per-file CSS rules and `cross-css-classes-defined`. This prevents false positives when platform CSS serves multiple games. No config change needed (backward compatible).
+- **`data-state` class collection** — values from `data-state` attribute on slides are now collected as CSS classes for cross-file checks (Reveal.js adds them to `.reveal-viewport` at runtime).
+- **Reveal.js layout helpers in whitelist** — `items-stretch`, `items-start`, `items-center`, `items-end`, `justify-start`, `justify-center`, `justify-end`, `justify-between`, `justify-around` added to `REVEAL_API_CLASSES`.
+- **`reveal-viewport` in dynamic classes whitelist** — root element created by Reveal.js.
+
+### Fixed
+- `css-no-transition-on-animated` no longer flags `#id` selectors (platform UI elements like `#timer-progress-bar` are not slides).
+
 ## 0.15.0 (2026-04-09)
 
 ### Added

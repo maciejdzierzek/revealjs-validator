@@ -11,6 +11,7 @@ const REVEAL_DYNAMIC_CLASSES = new Set([
   'navigate-up', 'navigate-down', 'slide-background',
   'slide-background-content', 'stack', 'overview',
   'paused', 'ready', 'center', 'has-parallax-background',
+  'reveal-viewport',  // root element created by Reveal.js
 ]);
 
 // Classes that are part of Reveal.js API — valid in both HTML and CSS
@@ -23,6 +24,9 @@ const REVEAL_API_CLASSES = new Set([
   'highlight-current-red', 'highlight-current-green', 'highlight-current-blue',
   'custom',
   'r-stretch', 'stretch', 'r-fit-text', 'r-stack', 'r-hstack', 'r-vstack', 'r-frame',
+  // Layout helpers (r-hstack/r-vstack modifiers) — docs/source/layout.md
+  'items-stretch', 'items-start', 'items-center', 'items-end',
+  'justify-start', 'justify-center', 'justify-end', 'justify-between', 'justify-around',
   'notes',
 ]);
 
@@ -41,6 +45,13 @@ function collectHTMLClasses(el: SlideElement): Set<string> {
   const classes = new Set<string>();
   function walk(e: SlideElement): void {
     for (const cls of e.classList) classes.add(cls);
+    // data-state values become CSS classes on .reveal-viewport when slide is active
+    const dataState = e.attributes['data-state'];
+    if (dataState) {
+      for (const cls of dataState.split(/\s+/)) {
+        if (cls) classes.add(cls);
+      }
+    }
     for (const child of e.children) walk(child);
   }
   walk(el);
@@ -142,8 +153,9 @@ const crossCSSClassesDefined: CrossFileRule = {
       }
     }
 
-    // Check each CSS file for unused classes
-    for (const { file, parsed } of ctx.css) {
+    // Check each CSS file for unused classes (skip base files — they serve multiple games)
+    for (const { file, parsed, isBaseFile } of ctx.css) {
+      if (isBaseFile) continue;
       const cssClasses = collectCSSClasses(parsed);
       for (const cls of cssClasses) {
         if (shouldIgnoreClass(cls, ignorePrefixes)) continue;

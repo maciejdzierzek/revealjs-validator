@@ -191,7 +191,8 @@ const cssNoTransitionOnAnimated: CSSValidationRule = {
           sel === 'html' ||
           sel === 'body' ||
           sel.startsWith('.reveal-viewport') ||
-          sel.includes('::')  // pseudo-elements are fine
+          sel.includes('::') ||  // pseudo-elements are fine
+          /^#[\w-]/.test(sel)    // #id selectors target platform UI, not slides
         ) continue;
 
         // Check if the transition affects properties that auto-animate uses
