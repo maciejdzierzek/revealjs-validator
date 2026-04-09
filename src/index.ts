@@ -28,6 +28,7 @@ import './rules/links.js';
 import './rules/extras.js';
 import './rules/config-rules.js';
 import './rules/cross-file/auto-animate-pairs.js';
+import './rules/cross-file/css-classes.js';
 
 export { parseSlides } from './parser.js';
 export { parseRevealConfig } from './config-validator.js';

@@ -9,6 +9,8 @@ export interface CrosscheckConfig {
   'missing-background-with-css'?: boolean;
   'assets-exist'?: boolean;
   'ignore-class-prefixes'?: string[];
+  /** Additional CSS files to include when cross-checking classes (e.g., platform base CSS) */
+  'css-base-files'?: string[];
 }
 
 export interface GameConfig {

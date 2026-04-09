@@ -1,5 +1,14 @@
 # Changelog
 
+## 0.10.0 (2026-04-09)
+
+### Added
+- **CSS cross-file checks** (in `--game` mode)
+  - `cross-css-classes-used` — classes in slide HTML not defined in any theme CSS
+  - `cross-css-classes-defined` — classes in theme CSS not used in any slide HTML (dead code)
+- **`crosscheck.css-base-files`** config — include additional CSS files (platform base styles)
+- Whitelist of Reveal.js API and dynamic classes — never flagged as missing
+
 ## 0.9.0 (2026-04-09)
 
 ### Added

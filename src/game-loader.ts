@@ -107,6 +107,15 @@ export function loadGame(
     }
   }
 
+  // Add base CSS files from crosscheck config (e.g., platform base styles)
+  const baseCSSFiles = validatorConfig?.crosscheck?.['css-base-files'] ?? [];
+  for (const baseFile of baseCSSFiles) {
+    const resolved = resolve(baseFile);
+    if (existsSync(resolved) && !cssFiles.includes(resolved)) {
+      cssFiles.push(resolved);
+    }
+  }
+
   // Assets directory
   const assetsDir = existsSync(join(absDir, 'assets')) ? join(absDir, 'assets') : null;
 
