@@ -3,16 +3,18 @@
 import { readFileSync, existsSync } from 'fs';
 import { resolve, relative } from 'path';
 import { glob } from './glob.js';
-import { validate, validateCSS } from './index.js';
+import { validate, validateCSS, validateConfigFile } from './index.js';
 import { loadConfig } from './config.js';
 import { format } from './reporter.js';
 import { getRegisteredRules } from './rules/index.js';
 import { getRegisteredCSSRules } from './rules/css-index.js';
+import { getRegisteredConfigRules } from './rules/config-index.js';
 import { getStagedFiles } from './staged.js';
 import { fixFile } from './fixer.js';
 import type { OutputFormat } from './reporter.js';
 import type { ValidationResult } from './rules/index.js';
 import type { CSSValidationResult } from './rules/css-index.js';
+import type { ConfigValidationResult } from './rules/config-index.js';
 
 function printHelp(): void {
   console.log(`
@@ -27,6 +29,7 @@ Options:
   --staged          Validate only git-staged .html and .css files (for pre-commit hooks)
   --fix             Auto-fix violations where possible (modifies files in-place)
   --dry-run         With --fix: show what would be fixed without modifying files
+  --reveal-key <p>  JSON path to Reveal.js config (default: auto-detect "reveal" key)
   --list-rules      List all available rules and exit
   --help, -h        Show this help message
   --version, -v     Show version
@@ -50,7 +53,8 @@ function printVersion(): void {
 function listRules(): void {
   const htmlRules = getRegisteredRules();
   const cssRules = getRegisteredCSSRules();
-  const total = htmlRules.length + cssRules.length;
+  const configRules = getRegisteredConfigRules();
+  const total = htmlRules.length + cssRules.length + configRules.length;
   console.log(`Available rules (${total}):\n`);
 
   console.log('  HTML rules:\n');
@@ -70,6 +74,15 @@ function listRules(): void {
     console.log(`         Ref: ${rule.docsReference}`);
     console.log('');
   }
+
+  console.log('  Config rules (JSON):\n');
+  for (const rule of configRules) {
+    const sev = rule.defaultSeverity.padEnd(5);
+    console.log(`  ${sev}  ${rule.id}`);
+    console.log(`         ${rule.description}`);
+    console.log(`         Ref: ${rule.docsReference}`);
+    console.log('');
+  }
 }
 
 function parseArgs(argv: string[]): {
@@ -82,6 +95,7 @@ function parseArgs(argv: string[]): {
   staged: boolean;
   fix: boolean;
   dryRun: boolean;
+  revealKey?: string;
 } {
   const files: string[] = [];
   let configPath: string | undefined;
@@ -92,6 +106,7 @@ function parseArgs(argv: string[]): {
   let staged = false;
   let fix = false;
   let dryRun = false;
+  let revealKey: string | undefined;
 
   let i = 0;
   while (i < argv.length) {
@@ -108,6 +123,8 @@ function parseArgs(argv: string[]): {
       fix = true;
     } else if (arg === '--dry-run') {
       dryRun = true;
+    } else if (arg === '--reveal-key' && i + 1 < argv.length) {
+      revealKey = argv[++i];
     } else if (arg === '--config' && i + 1 < argv.length) {
       configPath = argv[++i];
     } else if (arg === '--format' && i + 1 < argv.length) {
@@ -127,7 +144,7 @@ function parseArgs(argv: string[]): {
     i++;
   }
 
-  return { files, configPath, outputFormat, help, version, listRulesFlag, staged, fix, dryRun };
+  return { files, configPath, outputFormat, help, version, listRulesFlag, staged, fix, dryRun, revealKey };
 }
 
 async function main(): Promise<void> {
@@ -208,7 +225,11 @@ async function main(): Promise<void> {
     const content = readFileSync(file, 'utf-8');
     const relPath = relative(process.cwd(), file);
 
-    if (file.endsWith('.css')) {
+    if (file.endsWith('.json')) {
+      const result = validateConfigFile(file, { rules: config.rules }, args.revealKey);
+      results.push({ file: relPath, result });
+      if (!result.passed) hasErrors = true;
+    } else if (file.endsWith('.css')) {
       const result = validateCSS(content, { rules: config.rules });
       results.push({ file: relPath, result });
       if (!result.passed) hasErrors = true;

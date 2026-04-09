@@ -1,5 +1,16 @@
 # Changelog
 
+## 0.8.0 (2026-04-09)
+
+### Added
+- **Config validation** — 9 new rules for Reveal.js configuration in JSON files
+  - `config-valid-transition`, `config-valid-transition-speed`, `config-valid-background-transition`
+  - `config-width-height-numeric`, `config-margin-range`, `config-min-max-scale`
+  - `config-auto-slide-numeric`, `config-navigation-mode`, `config-view-mode`
+- **Auto-detect** — CLI recognizes `.json` files and extracts `"reveal"` key automatically
+- **`--reveal-key`** flag for non-standard JSON structures
+- **Programmatic API** — `validateConfig()`, `validateConfigFile()`
+
 ## 0.7.0 (2026-04-09)
 
 ### Added

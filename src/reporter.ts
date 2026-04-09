@@ -1,11 +1,12 @@
 import type { Violation, ValidationResult } from './rules/index.js';
 import type { CSSViolation, CSSValidationResult } from './rules/css-index.js';
+import type { ConfigViolation, ConfigValidationResult } from './rules/config-index.js';
 
 export type OutputFormat = 'text' | 'json';
 
 interface FileResult {
   file: string;
-  result: ValidationResult | CSSValidationResult;
+  result: ValidationResult | CSSValidationResult | ConfigValidationResult;
 }
 
 function formatHTMLViolation(file: string, v: Violation, symbol: string): string {
@@ -19,11 +20,18 @@ function formatCSSViolation(file: string, v: CSSViolation, symbol: string): stri
   return `  ${symbol} ${file}:${loc} [${v.ruleId}] ${v.message}`;
 }
 
-function formatViolation(file: string, v: Violation | CSSViolation, symbol: string): string {
+function formatConfigViolation(file: string, v: ConfigViolation, symbol: string): string {
+  return `  ${symbol} ${file} [${v.ruleId}] ${v.message}`;
+}
+
+function formatViolation(file: string, v: Violation | CSSViolation | ConfigViolation, symbol: string): string {
   if ('slideIndex' in v) {
     return formatHTMLViolation(file, v, symbol);
   }
-  return formatCSSViolation(file, v, symbol);
+  if ('line' in v) {
+    return formatCSSViolation(file, v as CSSViolation, symbol);
+  }
+  return formatConfigViolation(file, v as ConfigViolation, symbol);
 }
 
 export function formatText(results: FileResult[]): string {

@@ -1,0 +1,15 @@
+{
+  "reveal": {
+    "transition": "dissolve",
+    "transitionSpeed": "turbo",
+    "backgroundTransition": "wipe",
+    "width": "wide",
+    "height": -100,
+    "margin": 1.5,
+    "minScale": -1,
+    "maxScale": 0,
+    "autoSlide": "fast",
+    "navigationMode": "circular",
+    "view": "paginated"
+  }
+}

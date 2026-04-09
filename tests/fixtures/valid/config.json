@@ -1,0 +1,14 @@
+{
+  "reveal": {
+    "transition": "fade",
+    "transitionSpeed": "default",
+    "backgroundTransition": "slide",
+    "width": 1280,
+    "height": 720,
+    "margin": 0.06,
+    "minScale": 0.2,
+    "maxScale": 2.0,
+    "autoSlide": 0,
+    "navigationMode": "default"
+  }
+}

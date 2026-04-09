@@ -161,6 +161,30 @@ Validates `.css` files alongside HTML slides. Pass CSS files directly or mix wit
 revealjs-validator "slides/*.html" "theme/*.css"
 ```
 
+### Config (JSON)
+
+Validates Reveal.js configuration from JSON files. Auto-detects `"reveal"` key, or treats entire JSON as config.
+
+| Rule | Default | Description |
+|------|---------|-------------|
+| `config-valid-transition` | error | `transition` must be: none, fade, slide, convex, concave, zoom. |
+| `config-valid-transition-speed` | error | `transitionSpeed` must be: default, fast, slow. |
+| `config-valid-background-transition` | error | `backgroundTransition` must use valid transition values. |
+| `config-width-height-numeric` | error | `width` and `height` must be positive numbers (pixels). |
+| `config-margin-range` | error | `margin` must be between 0.0 and 1.0. |
+| `config-min-max-scale` | error | `minScale`/`maxScale` must be positive, minScale < maxScale. |
+| `config-auto-slide-numeric` | error | `autoSlide` must be non-negative number (ms). 0 = disabled. |
+| `config-navigation-mode` | error | `navigationMode` must be: default, linear, grid. |
+| `config-view-mode` | error | `view` must be "scroll" or omitted. |
+
+```bash
+# Validate config alongside slides and CSS
+revealjs-validator "slides/*.html" "theme/*.css" config.json
+
+# Custom key path for non-standard JSON structures
+revealjs-validator --reveal-key "presentation.settings" config.json
+```
+
 ## Pre-commit hook
 
 Validate only staged files — perfect for git pre-commit hooks:
