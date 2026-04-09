@@ -1,5 +1,17 @@
 # Changelog
 
+## 0.7.0 (2026-04-09)
+
+### Added
+- **`--fix` flag** — auto-fix violations where possible (modifies files in-place)
+- **`--dry-run` flag** — with `--fix`, shows what would be fixed without modifying files
+- **Fixer engine** — iterative fix loop with max 10 iterations, handles cascading fixes
+- **Programmatic API** — `fixFile()`, `fixHTMLSource()`, `fixCSSSource()`
+- **3 rules with auto-fix:**
+  - `no-css-background-on-section`: extracts color from inline CSS → `data-background-color`
+  - `missing-slide-background`: adds `data-background-color="#000"` to bare sections
+  - `css-no-background-on-reveal`: removes background property line from `.reveal` CSS
+
 ## 0.6.0 (2026-04-09)
 
 ### Added

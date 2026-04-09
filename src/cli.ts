@@ -9,6 +9,7 @@ import { format } from './reporter.js';
 import { getRegisteredRules } from './rules/index.js';
 import { getRegisteredCSSRules } from './rules/css-index.js';
 import { getStagedFiles } from './staged.js';
+import { fixFile } from './fixer.js';
 import type { OutputFormat } from './reporter.js';
 import type { ValidationResult } from './rules/index.js';
 import type { CSSValidationResult } from './rules/css-index.js';
@@ -24,6 +25,8 @@ Options:
   --config <path>   Path to config file (default: .revealjs-validator.json)
   --format <type>   Output format: text, json (default: text)
   --staged          Validate only git-staged .html and .css files (for pre-commit hooks)
+  --fix             Auto-fix violations where possible (modifies files in-place)
+  --dry-run         With --fix: show what would be fixed without modifying files
   --list-rules      List all available rules and exit
   --help, -h        Show this help message
   --version, -v     Show version
@@ -77,6 +80,8 @@ function parseArgs(argv: string[]): {
   version: boolean;
   listRulesFlag: boolean;
   staged: boolean;
+  fix: boolean;
+  dryRun: boolean;
 } {
   const files: string[] = [];
   let configPath: string | undefined;
@@ -85,6 +90,8 @@ function parseArgs(argv: string[]): {
   let version = false;
   let listRulesFlag = false;
   let staged = false;
+  let fix = false;
+  let dryRun = false;
 
   let i = 0;
   while (i < argv.length) {
@@ -97,6 +104,10 @@ function parseArgs(argv: string[]): {
       listRulesFlag = true;
     } else if (arg === '--staged') {
       staged = true;
+    } else if (arg === '--fix') {
+      fix = true;
+    } else if (arg === '--dry-run') {
+      dryRun = true;
     } else if (arg === '--config' && i + 1 < argv.length) {
       configPath = argv[++i];
     } else if (arg === '--format' && i + 1 < argv.length) {
@@ -116,7 +127,7 @@ function parseArgs(argv: string[]): {
     i++;
   }
 
-  return { files, configPath, outputFormat, help, version, listRulesFlag, staged };
+  return { files, configPath, outputFormat, help, version, listRulesFlag, staged, fix, dryRun };
 }
 
 async function main(): Promise<void> {
@@ -159,6 +170,37 @@ async function main(): Promise<void> {
     }
   }
 
+  // --fix mode: fix files then report remaining violations
+  if (args.fix) {
+    let totalFixed = 0;
+    let totalRemaining = 0;
+
+    for (const file of resolvedFiles) {
+      const relPath = relative(process.cwd(), file);
+      const result = fixFile(file, config.rules, args.dryRun);
+
+      if (result.fixed > 0) {
+        const action = args.dryRun ? 'would fix' : 'fixed';
+        console.log(`  \u2714 ${relPath}: ${action} ${result.fixed} violation${result.fixed !== 1 ? 's' : ''}`);
+        totalFixed += result.fixed;
+      }
+      if (result.remaining.length > 0) {
+        console.log(`  \u2717 ${relPath}: ${result.remaining.length} unfixable violation${result.remaining.length !== 1 ? 's' : ''}`);
+        totalRemaining += result.remaining.length;
+      }
+    }
+
+    console.log('');
+    const parts: string[] = [`${resolvedFiles.length} file${resolvedFiles.length !== 1 ? 's' : ''}`];
+    if (totalFixed > 0) parts.push(`${totalFixed} ${args.dryRun ? 'would be ' : ''}fixed`);
+    if (totalRemaining > 0) parts.push(`${totalRemaining} remaining`);
+    if (totalFixed === 0 && totalRemaining === 0) parts.push('all clean');
+    console.log(parts.join(', '));
+
+    process.exit(totalRemaining > 0 ? 1 : 0);
+  }
+
+  // Normal validation mode
   const results: { file: string; result: ValidationResult | CSSValidationResult }[] = [];
   let hasErrors = false;
 

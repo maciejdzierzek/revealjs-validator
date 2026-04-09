@@ -20,6 +20,8 @@ import './rules/links.js';
 import './rules/extras.js';
 
 export { parseSlides } from './parser.js';
+export { fixFile, fixHTMLSource, fixCSSSource } from './fixer.js';
+export type { FixResult } from './fixer.js';
 export { parseCSS } from './css-parser.js';
 export { runRules, getRegisteredRules } from './rules/index.js';
 export { runCSSRules, getRegisteredCSSRules } from './rules/css-index.js';

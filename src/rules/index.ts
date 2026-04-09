@@ -19,6 +19,12 @@ export interface Rule {
   /** Reference to official Reveal.js docs (file in docs/source/) */
   docsReference: string;
   check(parsed: ParseResult): Violation[];
+  /**
+   * Auto-fix: transform source string to fix the violation.
+   * Returns modified source, or null if this violation can't be auto-fixed.
+   * Operates on raw HTML string with regex/string replacement.
+   */
+  fix?: (source: string, violation: Violation) => string | null;
 }
 
 export interface RuleConfig {

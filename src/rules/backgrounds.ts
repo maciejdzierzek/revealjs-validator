@@ -67,6 +67,46 @@ const noCssBackgroundOnSection: Rule = {
     });
     return violations;
   },
+  fix(source: string, violation: Violation): string | null {
+    // Extract the style attribute from context
+    const ctx = violation.context;
+    if (!ctx) return null;
+    const styleMatch = ctx.match(/^style="(.*)"$/);
+    if (!styleMatch) return null;
+    const styleValue = styleMatch[1];
+
+    // Extract background-color value
+    const bgColorMatch = styleValue.match(/background-color\s*:\s*([^;]+)/i) ||
+                         styleValue.match(/background\s*:\s*(#[0-9a-fA-F]{3,8}|(?:rgb|hsl)a?\([^)]+\)|[a-z]+)\s*;?/i);
+    const bgColor = bgColorMatch ? bgColorMatch[1].trim().replace(/;$/, '') : null;
+
+    // Remove background properties from style
+    let cleanedStyle = styleValue
+      .replace(/background-color\s*:[^;]+;?\s*/gi, '')
+      .replace(/background-image\s*:[^;]+;?\s*/gi, '')
+      .replace(/background\s*:[^;]+;?\s*/gi, '')
+      .replace(/;\s*$/, '')
+      .trim();
+
+    // Build replacement: remove or update style, add data-background-color
+    const oldStyleAttr = `style="${styleValue}"`;
+    let replacement = '';
+    if (cleanedStyle) {
+      replacement = `style="${cleanedStyle}"`;
+    }
+    if (bgColor) {
+      replacement = `data-background-color="${bgColor}"${replacement ? ' ' + replacement : ''}`;
+    } else {
+      // Can't extract color — just remove background from style
+      if (replacement) {
+        replacement = replacement;
+      } else {
+        return null; // nothing useful to do
+      }
+    }
+
+    return source.replace(oldStyleAttr, replacement);
+  },
 };
 
 // ---------------------------------------------------------------------------
@@ -243,6 +283,14 @@ const missingSlideBackground: Rule = {
       }
     });
     return violations;
+  },
+  fix(source: string): string | null {
+    // Add data-background-color="#000" to the first <section without data-background
+    const result = source.replace(
+      /<section(?![^>]*data-background)/,
+      '<section data-background-color="#000"',
+    );
+    return result !== source ? result : null;
   },
 };
 

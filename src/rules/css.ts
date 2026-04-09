@@ -94,6 +94,23 @@ const cssNoBackgroundOnReveal: CSSValidationRule = {
 
     return violations;
   },
+  fix(source: string, violation: CSSViolation): string | null {
+    // Remove the background property line from CSS
+    // Find the line by line number and property match
+    const lines = source.split('\n');
+    const lineIdx = violation.line - 1; // 0-based
+    if (lineIdx < 0 || lineIdx >= lines.length) return null;
+
+    const line = lines[lineIdx];
+    // Verify this line contains the property
+    if (!line.includes(violation.property)) return null;
+
+    // Remove the line
+    lines.splice(lineIdx, 1);
+
+    // Clean up: if the rule block is now empty (just selector + braces), leave it
+    return lines.join('\n');
+  },
 };
 
 // ---------------------------------------------------------------------------
