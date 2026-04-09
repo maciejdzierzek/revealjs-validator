@@ -42,6 +42,15 @@ const noSrcAndDataSrc: Rule = {
     }
     return violations;
   },
+  fix(source: string, violation: Violation): string | null {
+    // Remove src, keep data-src (prefer lazy loading)
+    const ctx = violation.context;
+    if (!ctx) return null;
+    const srcMatch = ctx.match(/src="([^"]*)"/);
+    if (!srcMatch) return null;
+    const result = source.replace(` src="${srcMatch[1]}"`, '');
+    return result !== source ? result : null;
+  },
 };
 
 // ---------------------------------------------------------------------------

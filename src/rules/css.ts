@@ -288,6 +288,17 @@ const cssNoDeadKeyframes: CSSValidationRule = {
 
     return violations;
   },
+  fix(source: string, violation: CSSViolation): string | null {
+    // Remove entire @keyframes block
+    const name = violation.value;
+    // Match @keyframes name { ... } including nested braces
+    const pattern = new RegExp(
+      `@(-webkit-)?keyframes\\s+${name.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')}\\s*\\{[^}]*(?:\\{[^}]*\\}[^}]*)*\\}`,
+      's',
+    );
+    const result = source.replace(pattern, '').replace(/\n{3,}/g, '\n\n');
+    return result !== source ? result : null;
+  },
 };
 
 registerCSSRule(cssNoBackgroundOnReveal);

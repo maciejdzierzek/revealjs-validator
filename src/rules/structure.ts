@@ -78,6 +78,23 @@ const noDisplayNoneOnSection: Rule = {
     }
     return violations;
   },
+  fix(source: string, violation: Violation): string | null {
+    const ctx = violation.context;
+    if (!ctx) return null;
+    const styleMatch = ctx.match(/^style="(.*)"$/);
+    if (!styleMatch) return null;
+    const styleValue = styleMatch[1];
+    // Remove display:none / visibility:hidden from style
+    let cleaned = styleValue
+      .replace(/display\s*:\s*none\s*;?\s*/gi, '')
+      .replace(/visibility\s*:\s*hidden\s*;?\s*/gi, '')
+      .replace(/;\s*$/, '')
+      .trim();
+    const oldAttr = `style="${styleValue}"`;
+    let replacement = cleaned ? `style="${cleaned}"` : '';
+    replacement += `${replacement ? ' ' : ''}data-visibility="hidden"`;
+    return source.replace(oldAttr, replacement);
+  },
 };
 
 // ---------------------------------------------------------------------------

@@ -1,5 +1,17 @@
 # Changelog
 
+## 0.15.0 (2026-04-09)
+
+### Added
+- **7 new auto-fix rules** (total: 10 fixable with `--fix`)
+  - `css-no-dead-keyframes` — removes unused @keyframes block
+  - `background-video-flags` — removes orphaned loop/muted attribute
+  - `background-interactive-requires-iframe` — removes orphaned interactive attribute
+  - `no-display-none-on-section` — replaces display:none with data-visibility="hidden"
+  - `no-src-and-data-src` — removes src (keeps data-src for lazy loading)
+  - `valid-fragment-classes` — adds missing "fragment" class
+  - `fragment-index-needs-fragment` — adds missing "fragment" class
+
 ## 0.14.0 (2026-04-09)
 
 ### Added

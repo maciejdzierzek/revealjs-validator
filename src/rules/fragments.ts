@@ -73,6 +73,16 @@ const validFragmentClasses: Rule = {
     }
     return violations;
   },
+  fix(source: string, violation: Violation): string | null {
+    const ctx = violation.context;
+    if (!ctx) return null;
+    // Add "fragment" to existing class list
+    const classMatch = ctx.match(/class="([^"]*)"/);
+    if (!classMatch) return null;
+    const oldClasses = classMatch[1];
+    const newClasses = `fragment ${oldClasses}`;
+    return source.replace(`class="${oldClasses}"`, `class="${newClasses}"`);
+  },
 };
 
 // ---------------------------------------------------------------------------
@@ -191,6 +201,26 @@ const fragmentIndexNeedsFragment: Rule = {
       });
     }
     return violations;
+  },
+  fix(source: string, violation: Violation): string | null {
+    const ctx = violation.context;
+    if (!ctx) return null;
+    // Add "fragment" class to element
+    const tagMatch = ctx.match(/^<(\w+)/);
+    if (!tagMatch) return null;
+    const tag = tagMatch[1];
+    // Find this element in source and add class="fragment" or prepend to existing class
+    const indexVal = violation.context?.match(/data-fragment-index="([^"]*)"/)?.[1];
+    if (!indexVal) return null;
+    const pattern = new RegExp(`<${tag}([^>]*?)data-fragment-index="${indexVal}"`);
+    const match = source.match(pattern);
+    if (!match) return null;
+    const attrs = match[1];
+    const classMatch = attrs.match(/class="([^"]*)"/);
+    if (classMatch) {
+      return source.replace(`class="${classMatch[1]}"`, `class="fragment ${classMatch[1]}"`);
+    }
+    return source.replace(match[0], `<${tag}${attrs}class="fragment" data-fragment-index="${indexVal}"`);
   },
 };
 

@@ -213,6 +213,13 @@ const backgroundVideoFlags: Rule = {
     });
     return violations;
   },
+  fix(source: string, violation: Violation): string | null {
+    const flag = violation.context;
+    if (!flag) return null;
+    // Remove the orphaned flag attribute
+    const result = source.replace(new RegExp(`\\s*${flag}(="[^"]*")?`, 'g'), '');
+    return result !== source ? result : null;
+  },
 };
 
 // ---------------------------------------------------------------------------
@@ -249,6 +256,10 @@ const backgroundInteractiveRequiresIframe: Rule = {
       }
     });
     return violations;
+  },
+  fix(source: string): string | null {
+    const result = source.replace(/\s*data-background-interactive(="[^"]*")?/g, '');
+    return result !== source ? result : null;
   },
 };
 
