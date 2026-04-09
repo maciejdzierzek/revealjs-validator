@@ -1,5 +1,12 @@
 # Changelog
 
+## 0.6.0 (2026-04-09)
+
+### Added
+- **`--staged` flag** for pre-commit hooks — validates only git-staged `.html` and `.css` files
+- Returns exit 0 when no staged slides (nothing to validate)
+- Returns exit 1 when errors found — blocks commit
+
 ## 0.5.0 (2026-04-09)
 
 ### Added
