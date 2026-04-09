@@ -124,6 +124,9 @@ Every rule references the official Reveal.js documentation. No rule exists witho
 | `markdown-requires-script` | error | `<section data-markdown>` requires `<script type="text/template">`. |
 | `code-line-numbers-structure` | error | `data-line-numbers` must be on `<code>` inside `<pre>`. |
 | `missing-slide-background` | warn | Slide has no `data-background-*` — Reveal.js can't detect luminance. |
+| `notes-inside-section` | error | `<aside class="notes">` must be a direct child of `<section>`. |
+| `valid-timing-value` | error | `data-timing` must be a positive number (seconds). |
+| `duplicate-data-id` | error | Duplicate `data-id` in one slide — auto-animate can't match. |
 
 ### CSS (theme files)
 

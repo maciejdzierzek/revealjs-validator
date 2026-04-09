@@ -1,0 +1,20 @@
+<div class="reveal">
+  <div class="slides">
+    <!-- WARN: notes nested inside a div, not direct child of section -->
+    <section data-background-color="#000">
+      <div class="wrapper">
+        <aside class="notes">These notes are nested too deep</aside>
+      </div>
+    </section>
+
+    <!-- ERROR: invalid data-timing -->
+    <section data-background-color="#000" data-timing="slow">
+      <h2>Bad timing</h2>
+    </section>
+
+    <!-- ERROR: negative timing -->
+    <section data-background-color="#000" data-timing="-10">
+      <h2>Negative timing</h2>
+    </section>
+  </div>
+</div>

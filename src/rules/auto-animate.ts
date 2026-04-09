@@ -266,6 +266,45 @@ const autoAnimateIdNeedsAutoAnimate: Rule = {
   },
 };
 
+// ---------------------------------------------------------------------------
+// Rule: duplicate-data-id
+//
+// Source: docs/source/auto-animate.md — "How Elements are Matched"
+// "give the objects that you want to animate between a matching data-id"
+// Two elements with the same data-id in one slide = Reveal.js can't
+// determine which one to animate. Only one element per data-id per slide.
+// ---------------------------------------------------------------------------
+const duplicateDataId: Rule = {
+  id: 'duplicate-data-id',
+  category: 'auto-animate',
+  defaultSeverity: 'error',
+  description: 'Duplicate data-id in one slide — auto-animate cannot determine which element to animate.',
+  docsReference: 'auto-animate.md — "How Elements are Matched"',
+  check(parsed: ParseResult): Violation[] {
+    const violations: Violation[] = [];
+    for (const slide of parsed.flatSlides) {
+      const ids = new Map<string, number>();
+      walkElements(slide.element, (el) => {
+        if (el.tag === 'section') return;
+        const id = el.attributes['data-id'];
+        if (id === undefined) return;
+        ids.set(id, (ids.get(id) ?? 0) + 1);
+      });
+      for (const [id, count] of ids) {
+        if (count > 1) {
+          violations.push({
+            ruleId: 'duplicate-data-id',
+            message: `data-id="${id}" appears ${count} times in one slide. Each data-id must be unique within a slide.`,
+            slideIndex: slide.index,
+            context: `data-id="${id}" (×${count})`,
+          });
+        }
+      }
+    }
+    return violations;
+  },
+};
+
 registerRule(autoAnimatePairs);
 registerRule(autoAnimateOnSection);
 registerRule(dataIdNeedsAutoAnimate);
@@ -273,3 +312,4 @@ registerRule(dataIdInlineStyles);
 registerRule(autoAnimateDelayNotOnSection);
 registerRule(autoAnimateRestartNeedsAutoAnimate);
 registerRule(autoAnimateIdNeedsAutoAnimate);
+registerRule(duplicateDataId);

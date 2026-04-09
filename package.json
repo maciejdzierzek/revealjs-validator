@@ -1,6 +1,6 @@
 {
   "name": "revealjs-validator",
-  "version": "0.3.0",
+  "version": "0.4.0",
   "description": "Static HTML validator for Reveal.js presentations. Checks slides against official Reveal.js documentation rules.",
   "type": "module",
   "bin": {

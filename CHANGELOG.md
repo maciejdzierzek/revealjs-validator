@@ -1,5 +1,13 @@
 # Changelog
 
+## 0.4.0 (2026-04-09)
+
+### Added
+- **3 new rules**
+  - `notes-inside-section` — `<aside class="notes">` must be direct child of `<section>`
+  - `valid-timing-value` — `data-timing` must be numeric (seconds)
+  - `duplicate-data-id` — duplicate `data-id` in one slide breaks auto-animate matching
+
 ## 0.3.0 (2026-04-09)
 
 ### Added

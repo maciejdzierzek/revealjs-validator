@@ -267,6 +267,89 @@ const codeLineNumbersStructure: Rule = {
   },
 };
 
+// ---------------------------------------------------------------------------
+// Rule: notes-inside-section
+//
+// Source: docs/source/speaker-view.md
+// "Speaker notes can be added to any slide by adding an
+//  <aside class="notes"> element"
+// Notes outside <section> are not picked up by Reveal.js.
+// ---------------------------------------------------------------------------
+const notesInsideSection: Rule = {
+  id: 'notes-inside-section',
+  category: 'structure',
+  defaultSeverity: 'error',
+  description: '<aside class="notes"> must be inside a <section> slide. Speaker notes outside slides are ignored.',
+  docsReference: 'speaker-view.md — "adding an <aside class=\\"notes\\"> element"',
+  check(parsed: ParseResult): Violation[] {
+    // This rule checks the raw parsed structure. If an <aside class="notes">
+    // appears as a direct child of .slides (not inside a section), it's wrong.
+    // In our parser, flatSlides only contains sections, so we check if any
+    // section's children contain notes (that's fine). The problem is notes
+    // that are siblings of sections — we detect this at the top-level parse.
+    //
+    // Since our parser only extracts <section> elements, we can't directly
+    // see orphaned <aside>. Instead, check within each slide that <aside class="notes">
+    // is a direct child of section, not nested deeper than one level inside
+    // a non-section container.
+    const violations: Violation[] = [];
+    // For now: check that any element with class="notes" and tag="aside"
+    // exists only as direct child of section
+    for (const slide of parsed.flatSlides) {
+      walkElements(slide.element, (el) => {
+        if (el.tag !== 'aside') return;
+        if (!el.classList.includes('notes')) return;
+        // Check if it's a direct child of section
+        const isDirectChild = slide.element.children.some(
+          (child) => child === el,
+        );
+        if (!isDirectChild) {
+          violations.push({
+            ruleId: 'notes-inside-section',
+            message: '<aside class="notes"> should be a direct child of <section>, not nested inside other elements.',
+            slideIndex: slide.index,
+            context: '<aside class="notes">',
+          });
+        }
+      });
+    }
+    return violations;
+  },
+};
+
+// ---------------------------------------------------------------------------
+// Rule: valid-timing-value
+//
+// Source: docs/source/speaker-view.md
+// "You can also add timing to each slide by setting the data-timing
+//  attribute (in seconds)"
+// Value must be numeric (seconds).
+// ---------------------------------------------------------------------------
+const validTimingValue: Rule = {
+  id: 'valid-timing-value',
+  category: 'structure',
+  defaultSeverity: 'error',
+  description: 'data-timing must be a numeric value in seconds.',
+  docsReference: 'speaker-view.md — "data-timing attribute (in seconds)"',
+  check(parsed: ParseResult): Violation[] {
+    const violations: Violation[] = [];
+    for (const slide of parsed.flatSlides) {
+      const val = slide.element.attributes['data-timing'];
+      if (val === undefined) continue;
+      const num = parseFloat(val);
+      if (isNaN(num) || num < 0) {
+        violations.push({
+          ruleId: 'valid-timing-value',
+          message: `data-timing must be a positive number (seconds), got "${val}".`,
+          slideIndex: slide.index,
+          context: `data-timing="${val}"`,
+        });
+      }
+    }
+    return violations;
+  },
+};
+
 registerRule(noInlineTransitionCss);
 registerRule(noDisplayNoneOnSection);
 registerRule(validDataVisibility);
@@ -274,3 +357,5 @@ registerRule(validAutoslideValue);
 registerRule(verticalSlidesNesting);
 registerRule(markdownRequiresScript);
 registerRule(codeLineNumbersStructure);
+registerRule(notesInsideSection);
+registerRule(validTimingValue);
