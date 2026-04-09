@@ -5,12 +5,12 @@ import type { ValidatorConfig } from './config.js';
 export interface SlideEntry {
   id?: string;
   file: string;
-  /** Absolute path resolved from game dir */
+  /** Absolute path resolved from project dir */
   absolutePath: string;
 }
 
-export interface GameContext {
-  /** Absolute path to game directory */
+export interface ProjectContext {
+  /** Absolute path to project directory */
   dir: string;
   /** Absolute path to config.json (if found) */
   configPath: string | null;
@@ -27,19 +27,19 @@ export interface GameContext {
 }
 
 /**
- * Load a game directory for cross-file validation.
+ * Load a project directory for cross-file validation.
  *
  * Auto-detect: looks for config.json with a "slides" array containing
- * objects with a "file" field. Configurable via validatorConfig.game
+ * objects with a "file" field. Configurable via validatorConfig.project
  * for non-standard formats.
  *
  * Fallback: if no config.json or no slides array, reads all .html files
  * from slides/ subdirectory in alphabetical order.
  */
-export function loadGame(
+export function loadProject(
   dir: string,
   validatorConfig?: ValidatorConfig,
-): GameContext {
+): ProjectContext {
   const absDir = resolve(dir);
 
   if (!existsSync(absDir)) {
@@ -47,8 +47,8 @@ export function loadGame(
   }
 
   // Config field names (configurable for non-standard formats)
-  const slidesKey = validatorConfig?.game?.slidesKey ?? 'slides';
-  const fileField = validatorConfig?.game?.fileField ?? 'file';
+  const slidesKey = validatorConfig?.project?.slidesKey ?? 'slides';
+  const fileField = validatorConfig?.project?.fileField ?? 'file';
 
   // Look for config.json
   const configPath = join(absDir, 'config.json');

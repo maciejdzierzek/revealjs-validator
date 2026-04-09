@@ -1,4 +1,4 @@
-import type { GameContext } from '../../game-loader.js';
+import type { ProjectContext } from '../../project-loader.js';
 import type { ParseResult } from '../../parser.js';
 import type { CSSParseResult } from '../../css-parser.js';
 import type { Severity, RuleConfig } from '../index.js';
@@ -26,7 +26,7 @@ export interface CrossFileRule {
 }
 
 export interface CrossFileContext {
-  game: GameContext;
+  project: ProjectContext;
   /** Parsed slides in config.json order */
   slides: { file: string; slideId?: string; parsed: ParseResult }[];
   /** Parsed CSS files */

@@ -13,7 +13,7 @@ export interface CrosscheckConfig {
   'css-base-files'?: string[];
 }
 
-export interface GameConfig {
+export interface ProjectConfig {
   /** Key in config.json containing slides array (default: "slides") */
   slidesKey?: string;
   /** Field name in each slide entry for file path (default: "file") */
@@ -24,7 +24,7 @@ export interface ValidatorConfig {
   rules?: RuleConfig;
   ignore?: string[];
   crosscheck?: CrosscheckConfig;
-  game?: GameConfig;
+  project?: ProjectConfig;
 }
 
 const CONFIG_FILENAMES = [

@@ -34,7 +34,7 @@ function collectAssetPaths(el: SlideElement): { attr: string; path: string }[] {
 // Rule: cross-assets-exist
 //
 // Checks that asset paths referenced in slides actually exist on disk.
-// Resolves paths relative to game directory.
+// Resolves paths relative to project directory.
 // ---------------------------------------------------------------------------
 const crossAssetsExist: CrossFileRule = {
   id: 'cross-assets-exist',
@@ -45,12 +45,12 @@ const crossAssetsExist: CrossFileRule = {
   crosscheckKey: 'assets-exist',
   check(ctx: CrossFileContext): CrossFileViolation[] {
     const violations: CrossFileViolation[] = [];
-    const gameDir = ctx.game.dir;
+    const projectDir = ctx.project.dir;
 
     // For RunRiva-style paths like /games/oscar-po-2000/assets/photo.jpg
-    // we need to find the server root. Heuristic: walk up from gameDir
+    // we need to find the server root. Heuristic: walk up from projectDir
     // looking for a directory containing "server/" or "package.json".
-    const serverRoot = findServerRoot(gameDir);
+    const serverRoot = findServerRoot(projectDir);
 
     for (let i = 0; i < ctx.slides.length; i++) {
       const { file, slideId, parsed } = ctx.slides[i];
@@ -59,7 +59,7 @@ const crossAssetsExist: CrossFileRule = {
 
       const assetPaths = collectAssetPaths(slide.element);
       for (const { attr, path } of assetPaths) {
-        const resolved = resolvePath(path, gameDir, serverRoot);
+        const resolved = resolvePath(path, projectDir, serverRoot);
         if (resolved && !existsSync(resolved)) {
           violations.push({
             ruleId: 'cross-assets-exist',
@@ -80,11 +80,11 @@ const crossAssetsExist: CrossFileRule = {
  * Resolve an asset path to an absolute file path.
  *
  * - Absolute paths (/games/...) → resolve from server root
- * - Relative paths (assets/...) → resolve from game directory
+ * - Relative paths (assets/...) → resolve from project directory
  */
 function resolvePath(
   assetPath: string,
-  gameDir: string,
+  projectDir: string,
   serverRoot: string | null,
 ): string | null {
   if (assetPath.startsWith('/')) {
@@ -95,16 +95,16 @@ function resolvePath(
     // No server root found — can't resolve, skip
     return null;
   }
-  // Relative path — resolve from game directory
-  return resolve(gameDir, assetPath);
+  // Relative path — resolve from project directory
+  return resolve(projectDir, assetPath);
 }
 
 /**
- * Walk up from gameDir looking for a plausible server root
+ * Walk up from projectDir looking for a plausible server root
  * (directory containing package.json or server/).
  */
-function findServerRoot(gameDir: string): string | null {
-  let current = gameDir;
+function findServerRoot(projectDir: string): string | null {
+  let current = projectDir;
   for (let i = 0; i < 10; i++) {
     if (existsSync(join(current, 'package.json')) ||
         existsSync(join(current, 'server'))) {

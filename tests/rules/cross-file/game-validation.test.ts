@@ -1,23 +1,23 @@
 import { describe, it, expect } from 'vitest';
 import { resolve } from 'path';
-import { validateGame } from '../../../src/index.js';
+import { validateProject } from '../../../src/index.js';
 
-const gameFixture = (name: string) => resolve(__dirname, '../../fixtures', name);
+const projectFixture = (name: string) => resolve(__dirname, '../../fixtures', name);
 
-describe('--game validation', () => {
+describe('--project validation', () => {
   describe('valid game', () => {
     it('should pass with correct auto-animate pairs', () => {
-      const result = validateGame(gameFixture('game-valid'));
+      const result = validateProject(projectFixture('project-valid'));
       expect(result.totalErrors).toBe(0);
       expect(result.passed).toBe(true);
-      expect(result.game.slides).toHaveLength(4);
-      expect(result.game.cssFiles).toHaveLength(1);
+      expect(result.project.slides).toHaveLength(4);
+      expect(result.project.cssFiles).toHaveLength(1);
     });
   });
 
   describe('invalid game — broken auto-animate pairs', () => {
     it('should flag slides with auto-animate but no pair', () => {
-      const result = validateGame(gameFixture('game-invalid'));
+      const result = validateProject(projectFixture('project-invalid'));
       const crossErrors = result.crossFileResult.errors.filter(
         (e) => e.ruleId === 'cross-auto-animate-pairs',
       );
@@ -26,8 +26,8 @@ describe('--game validation', () => {
     });
 
     it('should auto-disable per-file auto-animate-pairs', () => {
-      const result = validateGame(gameFixture('game-invalid'));
-      // Per-file auto-animate-pairs should NOT fire (disabled by --game)
+      const result = validateProject(projectFixture('project-invalid'));
+      // Per-file auto-animate-pairs should NOT fire (disabled by --project)
       const perFileAutoAnimate = result.perFileResults.flatMap((r) =>
         [...r.result.errors, ...r.result.warnings].filter(
           (e) => e.ruleId === 'auto-animate-pairs',
@@ -37,16 +37,16 @@ describe('--game validation', () => {
     });
   });
 
-  describe('game loader', () => {
+  describe('project loader', () => {
     it('should read config.json and resolve slide paths', () => {
-      const result = validateGame(gameFixture('game-valid'));
-      expect(result.game.configPath).toContain('config.json');
-      expect(result.game.revealConfig).toBeTruthy();
-      expect(result.game.revealConfig?.['transition']).toBe('fade');
+      const result = validateProject(projectFixture('project-valid'));
+      expect(result.project.configPath).toContain('config.json');
+      expect(result.project.revealConfig).toBeTruthy();
+      expect(result.project.revealConfig?.['transition']).toBe('fade');
     });
 
     it('should validate reveal config from game', () => {
-      const result = validateGame(gameFixture('game-valid'));
+      const result = validateProject(projectFixture('project-valid'));
       // Config is valid — no config errors
       expect(result.configResult?.errors).toEqual([]);
     });

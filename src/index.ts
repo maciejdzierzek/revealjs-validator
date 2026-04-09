@@ -1,7 +1,7 @@
 import { readFileSync } from 'fs';
 import { parseSlides } from './parser.js';
 import { parseCSS } from './css-parser.js';
-import { loadGame } from './game-loader.js';
+import { loadProject } from './project-loader.js';
 import { runRules } from './rules/index.js';
 import { runCSSRules } from './rules/css-index.js';
 import { runConfigRules } from './rules/config-index.js';
@@ -12,7 +12,7 @@ import type { CSSValidationResult } from './rules/css-index.js';
 import type { ConfigValidationResult } from './rules/config-index.js';
 import type { CrossFileResult, CrossFileContext } from './rules/cross-file/index.js';
 import type { ValidatorConfig } from './config.js';
-import type { GameContext } from './game-loader.js';
+import type { ProjectContext } from './project-loader.js';
 
 // Import rule modules to trigger registration
 import './rules/backgrounds.js';
@@ -34,8 +34,8 @@ import './rules/cross-file/assets-exist.js';
 
 export { parseSlides } from './parser.js';
 export { parseRevealConfig } from './config-validator.js';
-export { loadGame } from './game-loader.js';
-export type { GameContext, SlideEntry } from './game-loader.js';
+export { loadProject } from './project-loader.js';
+export type { ProjectContext, SlideEntry } from './project-loader.js';
 export { fixFile, fixHTMLSource, fixCSSSource } from './fixer.js';
 export type { FixResult } from './fixer.js';
 export { parseCSS } from './css-parser.js';
@@ -119,14 +119,14 @@ export function validateConfigFile(
 }
 
 /**
- * Validate an entire game directory with cross-file checks.
+ * Validate an entire project directory with cross-file checks.
  * Runs per-file validation on each slide/CSS + cross-file rules.
  */
-export function validateGame(
-  gameDir: string,
+export function validateProject(
+  projectDir: string,
   validatorConfig?: ValidatorConfig,
-): GameValidationResult {
-  const game = loadGame(gameDir, validatorConfig);
+): ProjectValidationResult {
+  const project = loadProject(projectDir, validatorConfig);
   const ruleConfig = validatorConfig?.rules ?? {};
 
   // Auto-disable per-file rules that cross-file replaces
@@ -137,7 +137,7 @@ export function validateGame(
   };
 
   // Parse all slides
-  const parsedSlides = game.slides.map((entry) => {
+  const parsedSlides = project.slides.map((entry) => {
     const html = readFileSync(entry.absolutePath, 'utf-8');
     return {
       file: entry.file,
@@ -147,10 +147,10 @@ export function validateGame(
   });
 
   // Parse all CSS
-  const parsedCSS = game.cssFiles.map((file) => {
+  const parsedCSS = project.cssFiles.map((file) => {
     const css = readFileSync(file, 'utf-8');
     return {
-      file: file.replace(game.dir + '/', ''),
+      file: file.replace(project.dir + '/', ''),
       parsed: parseCSS(css),
     };
   });
@@ -171,13 +171,13 @@ export function validateGame(
 
   // Config validation
   let configResult: ConfigValidationResult | null = null;
-  if (game.revealConfig) {
-    configResult = runConfigRules(game.revealConfig, ruleConfig);
+  if (project.revealConfig) {
+    configResult = runConfigRules(project.revealConfig, ruleConfig);
   }
 
   // Cross-file validation
   const crossFileCtx: CrossFileContext = {
-    game,
+    project,
     slides: parsedSlides,
     css: parsedCSS,
   };
@@ -202,7 +202,7 @@ export function validateGame(
   ];
 
   return {
-    game,
+    project,
     perFileResults,
     perFileCSSResults,
     configResult,
@@ -213,8 +213,8 @@ export function validateGame(
   };
 }
 
-export interface GameValidationResult {
-  game: GameContext;
+export interface ProjectValidationResult {
+  project: ProjectContext;
   perFileResults: { file: string; result: ValidationResult }[];
   perFileCSSResults: { file: string; result: CSSValidationResult }[];
   configResult: ConfigValidationResult | null;

@@ -3,7 +3,7 @@
 import { readFileSync, existsSync } from 'fs';
 import { resolve, relative } from 'path';
 import { glob } from './glob.js';
-import { validate, validateCSS, validateConfigFile, validateGame } from './index.js';
+import { validate, validateCSS, validateConfigFile, validateProject } from './index.js';
 import { loadConfig } from './config.js';
 import { format } from './reporter.js';
 import { getRegisteredRules } from './rules/index.js';
@@ -29,7 +29,7 @@ Options:
   --staged          Validate only git-staged .html and .css files (for pre-commit hooks)
   --fix             Auto-fix violations where possible (modifies files in-place)
   --dry-run         With --fix: show what would be fixed without modifying files
-  --game <dir>      Validate entire game directory with cross-file checks
+  --project <dir>      Validate entire project directory with cross-file checks
   --reveal-key <p>  JSON path to Reveal.js config (default: auto-detect "reveal" key)
   --list-rules      List all available rules and exit
   --help, -h        Show this help message
@@ -40,7 +40,7 @@ Supports both HTML slide files and CSS theme files.
 Examples:
   revealjs-validator "slides/*.html"
   revealjs-validator "slides/*.html" "theme/*.css"
-  revealjs-validator --game games/my-presentation/     # cross-file validation
+  revealjs-validator --project games/my-presentation/     # cross-file validation
   revealjs-validator --staged                          # pre-commit hook
   revealjs-validator --format json "slides/**/*.html"
   revealjs-validator --config my-config.json slides/
@@ -98,7 +98,7 @@ function parseArgs(argv: string[]): {
   fix: boolean;
   dryRun: boolean;
   revealKey?: string;
-  gameDir?: string;
+  projectDir?: string;
 } {
   const files: string[] = [];
   let configPath: string | undefined;
@@ -110,7 +110,7 @@ function parseArgs(argv: string[]): {
   let fix = false;
   let dryRun = false;
   let revealKey: string | undefined;
-  let gameDir: string | undefined;
+  let projectDir: string | undefined;
 
   let i = 0;
   while (i < argv.length) {
@@ -127,8 +127,8 @@ function parseArgs(argv: string[]): {
       fix = true;
     } else if (arg === '--dry-run') {
       dryRun = true;
-    } else if (arg === '--game' && i + 1 < argv.length) {
-      gameDir = argv[++i];
+    } else if (arg === '--project' && i + 1 < argv.length) {
+      projectDir = argv[++i];
     } else if (arg === '--reveal-key' && i + 1 < argv.length) {
       revealKey = argv[++i];
     } else if (arg === '--config' && i + 1 < argv.length) {
@@ -150,7 +150,7 @@ function parseArgs(argv: string[]): {
     i++;
   }
 
-  return { files, configPath, outputFormat, help, version, listRulesFlag, staged, fix, dryRun, revealKey, gameDir };
+  return { files, configPath, outputFormat, help, version, listRulesFlag, staged, fix, dryRun, revealKey, projectDir };
 }
 
 async function main(): Promise<void> {
@@ -171,9 +171,9 @@ async function main(): Promise<void> {
 
   const config = loadConfig(args.configPath);
 
-  // --game mode: validate entire game directory with cross-file checks
-  if (args.gameDir) {
-    const result = validateGame(args.gameDir, config);
+  // --project mode: validate entire project directory with cross-file checks
+  if (args.projectDir) {
+    const result = validateProject(args.projectDir, config);
     const lines: string[] = [];
 
     // Per-file violations
@@ -206,7 +206,7 @@ async function main(): Promise<void> {
 
     if (lines.length > 0) console.log(lines.join('\n'));
     console.log('');
-    const totalFiles = result.game.slides.length + result.game.cssFiles.length + (result.game.configPath ? 1 : 0);
+    const totalFiles = result.project.slides.length + result.project.cssFiles.length + (result.project.configPath ? 1 : 0);
     const parts = [`${totalFiles} files`];
     if (result.totalErrors > 0) parts.push(`${result.totalErrors} error${result.totalErrors !== 1 ? 's' : ''}`);
     if (result.totalWarnings > 0) parts.push(`${result.totalWarnings} warning${result.totalWarnings !== 1 ? 's' : ''}`);

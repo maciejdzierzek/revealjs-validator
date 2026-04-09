@@ -1,5 +1,14 @@
 # Changelog
 
+## 0.12.0 (2026-04-09)
+
+### Breaking
+- **`--game` renamed to `--project`** — all references to "game" removed from public API
+  - CLI: `--game <dir>` → `--project <dir>`
+  - API: `validateGame()` → `validateProject()`, `GameContext` → `ProjectContext`, `GameValidationResult` → `ProjectValidationResult`
+  - Config: `game: {}` → `project: {}` in `.revealjs-validator.json`
+  - Internal: `game-loader.ts` → `project-loader.ts`
+
 ## 0.11.0 (2026-04-09)
 
 ### Added
