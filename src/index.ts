@@ -8,6 +8,9 @@ import './rules/backgrounds.js';
 import './rules/auto-animate.js';
 import './rules/transitions.js';
 import './rules/fragments.js';
+import './rules/layout.js';
+import './rules/media.js';
+import './rules/structure.js';
 
 export { parseSlides } from './parser.js';
 export { runRules, getRegisteredRules } from './rules/index.js';

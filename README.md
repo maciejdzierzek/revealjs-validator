@@ -67,7 +67,58 @@ Every rule references the official Reveal.js documentation. No rule exists witho
 | `background-video-flags` | warn | `data-background-video-loop/muted` require `data-background-video`. |
 | `background-interactive-requires-iframe` | warn | `data-background-interactive` requires `data-background-iframe`. |
 
-*More rule categories coming: auto-animate, transitions, fragments, layout, media, structure.*
+### Auto-Animate
+
+| Rule | Default | Description |
+|------|---------|-------------|
+| `auto-animate-pairs` | error | `data-auto-animate` needs an adjacent slide with the same attribute. |
+| `auto-animate-on-section` | error | `data-auto-animate` is only valid on `<section>` elements. |
+| `data-id-needs-auto-animate` | warn | `data-id` in a slide without `data-auto-animate` has no effect. |
+| `data-id-inline-styles` | warn | Elements with `data-id` should use inline `style=` for animated properties. |
+| `auto-animate-delay-not-on-section` | error | `data-auto-animate-delay` only works on child elements, not `<section>`. |
+| `auto-animate-restart-needs-auto-animate` | warn | `data-auto-animate-restart` without `data-auto-animate` has no effect. |
+| `auto-animate-id-needs-auto-animate` | warn | `data-auto-animate-id` without `data-auto-animate` has no effect. |
+
+### Transitions
+
+| Rule | Default | Description |
+|------|---------|-------------|
+| `valid-transition-values` | error | `data-transition` must use valid values: none, fade, slide, convex, concave, zoom. |
+| `valid-transition-speed` | error | `data-transition-speed` must be: default, fast, or slow. |
+| `transition-on-section` | error | `data-transition` and `data-transition-speed` are only valid on `<section>`. |
+
+### Fragments
+
+| Rule | Default | Description |
+|------|---------|-------------|
+| `valid-fragment-classes` | error | Fragment effect classes require the base `fragment` class. |
+| `known-fragment-effect` | warn | Unknown fragment effect class without `custom` — might be a typo. |
+| `fragment-index-numeric` | error | `data-fragment-index` must be a non-negative integer. |
+| `fragment-index-needs-fragment` | warn | `data-fragment-index` without the `fragment` class has no effect. |
+
+### Layout
+
+| Rule | Default | Description |
+|------|---------|-------------|
+| `r-stretch-single` | error | Only one `r-stretch` element per slide. |
+| `r-stretch-direct-child` | error | `r-stretch` must be a direct child of `<section>`. |
+| `no-height-top-on-section` | warn | `<section>` should not have inline height/top/bottom. |
+
+### Media
+
+| Rule | Default | Description |
+|------|---------|-------------|
+| `no-src-and-data-src` | warn | Element has both `src` and `data-src` — likely a mistake. |
+| `data-autoplay-on-media` | warn | `data-autoplay` only works on `<video>` and `<audio>`. |
+| `data-preload-needs-data-src` | warn | `data-preload` on `<iframe>` with `src` has no effect. |
+
+### Structure
+
+| Rule | Default | Description |
+|------|---------|-------------|
+| `no-inline-transition-css` | warn | Inline CSS `transition:` can conflict with auto-animate. |
+| `no-display-none-on-section` | warn | Use `data-visibility="hidden"` instead of CSS display:none. |
+| `valid-data-visibility` | error | `data-visibility` must be "hidden" or "uncounted". |
 
 ## Configuration
 

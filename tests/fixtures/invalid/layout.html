@@ -1,0 +1,21 @@
+<div class="reveal">
+  <div class="slides">
+    <!-- ERROR: two r-stretch in one slide -->
+    <section>
+      <img class="r-stretch" src="a.jpg" />
+      <img class="r-stretch" src="b.jpg" />
+    </section>
+
+    <!-- ERROR: r-stretch nested inside a div (not direct child of section) -->
+    <section>
+      <div class="wrapper">
+        <img class="r-stretch" src="nested.jpg" />
+      </div>
+    </section>
+
+    <!-- WARN: inline height on section -->
+    <section style="height: 600px; top: 50px;">
+      <p>Bad: explicit height/top</p>
+    </section>
+  </div>
+</div>

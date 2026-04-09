@@ -1,0 +1,23 @@
+<div class="reveal">
+  <div class="slides">
+    <!-- WARN: inline CSS transition on element -->
+    <section>
+      <div style="transition: all 0.3s ease;">Animated div</div>
+    </section>
+
+    <!-- WARN: display:none on section -->
+    <section style="display: none;">
+      <p>Hidden with CSS</p>
+    </section>
+
+    <!-- WARN: visibility:hidden on section -->
+    <section style="visibility: hidden;">
+      <p>Hidden with CSS</p>
+    </section>
+
+    <!-- ERROR: invalid data-visibility value -->
+    <section data-visibility="invisible">
+      <p>Bad visibility value</p>
+    </section>
+  </div>
+</div>

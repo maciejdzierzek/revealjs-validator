@@ -1,0 +1,29 @@
+<div class="reveal">
+  <div class="slides">
+    <!-- Layout: single r-stretch, direct child -->
+    <section>
+      <h2>Title</h2>
+      <img class="r-stretch" src="photo.jpg" />
+    </section>
+
+    <!-- Media: data-src for lazy loading -->
+    <section>
+      <img data-src="lazy.jpg" />
+      <video data-src="lazy.mp4" data-autoplay></video>
+      <iframe data-src="https://example.com" data-preload></iframe>
+    </section>
+
+    <!-- Structure: data-visibility -->
+    <section data-visibility="hidden">
+      <p>Hidden slide</p>
+    </section>
+    <section data-visibility="uncounted">
+      <p>Uncounted slide</p>
+    </section>
+
+    <!-- Normal slide with min-height (OK) -->
+    <section style="min-height: 400px;">
+      <p>Min height is fine</p>
+    </section>
+  </div>
+</div>
