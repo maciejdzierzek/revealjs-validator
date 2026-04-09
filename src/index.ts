@@ -152,7 +152,7 @@ export function validateProject(
     return {
       file: file.replace(project.dir + '/', ''),
       parsed: parseCSS(css),
-      isBaseFile: project.cssBaseFiles.has(file),
+      isBaseFile: project.cssBaseFiles?.has(file) ?? false,
     };
   });
 

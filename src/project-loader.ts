@@ -23,7 +23,7 @@ export interface ProjectContext {
   /** CSS theme files found */
   cssFiles: string[];
   /** Subset of cssFiles that are platform base CSS (classes-only: provide classes but skip dead-code and per-file CSS rules) */
-  cssBaseFiles: Set<string>;
+  cssBaseFiles?: Set<string>;
   /** Assets directory (if exists) */
   assetsDir: string | null;
 }

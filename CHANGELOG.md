@@ -1,5 +1,10 @@
 # Changelog
 
+## 0.16.1 (2026-04-09)
+
+### Fixed
+- `ProjectContext.cssBaseFiles` is now optional — prevents TypeScript errors for API consumers who create `ProjectContext` manually without base files config.
+
 ## 0.16.0 (2026-04-09)
 
 ### Added
