@@ -120,6 +120,22 @@ Every rule references the official Reveal.js documentation. No rule exists witho
 | `no-display-none-on-section` | warn | Use `data-visibility="hidden"` instead of CSS display:none. |
 | `valid-data-visibility` | error | `data-visibility` must be "hidden" or "uncounted". |
 
+### CSS (theme files)
+
+Validates `.css` files alongside HTML slides. Pass CSS files directly or mix with HTML globs.
+
+| Rule | Default | Description |
+|------|---------|-------------|
+| `css-no-background-on-reveal` | error | CSS background on `.reveal` or `.reveal-viewport` hides it from Reveal.js. |
+| `css-no-background-on-section` | error | CSS background on section selectors conflicts with `data-background-*`. |
+| `css-no-transition-on-animated` | warn | CSS `transition` can conflict with auto-animate transitions. |
+| `css-no-dead-keyframes` | warn | Unused `@keyframes` — not referenced by any animation in the file. |
+
+```bash
+# Validate both HTML and CSS
+revealjs-validator "slides/*.html" "theme/*.css"
+```
+
 ## Configuration
 
 Create a `.revealjs-validator.json` in your project root:

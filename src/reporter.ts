@@ -1,16 +1,29 @@
 import type { Violation, ValidationResult } from './rules/index.js';
+import type { CSSViolation, CSSValidationResult } from './rules/css-index.js';
 
 export type OutputFormat = 'text' | 'json';
 
 interface FileResult {
   file: string;
-  result: ValidationResult;
+  result: ValidationResult | CSSValidationResult;
 }
 
-function formatViolation(file: string, v: Violation, symbol: string): string {
+function formatHTMLViolation(file: string, v: Violation, symbol: string): string {
   const loc = `slide ${v.slideIndex + 1}`;
   const ctx = v.context ? ` (${v.context})` : '';
   return `  ${symbol} ${file}:${loc} [${v.ruleId}] ${v.message}${ctx}`;
+}
+
+function formatCSSViolation(file: string, v: CSSViolation, symbol: string): string {
+  const loc = `line ${v.line}`;
+  return `  ${symbol} ${file}:${loc} [${v.ruleId}] ${v.message}`;
+}
+
+function formatViolation(file: string, v: Violation | CSSViolation, symbol: string): string {
+  if ('slideIndex' in v) {
+    return formatHTMLViolation(file, v, symbol);
+  }
+  return formatCSSViolation(file, v, symbol);
 }
 
 export function formatText(results: FileResult[]): string {

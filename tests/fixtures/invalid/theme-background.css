@@ -1,0 +1,15 @@
+/* ERROR: background on .reveal — hides background from Reveal.js */
+.reveal {
+  background-color: #080810;
+  font-size: 44px;
+}
+
+/* ERROR: background on .reveal-viewport */
+.reveal-viewport {
+  background: linear-gradient(to bottom, #000, #111);
+}
+
+/* ERROR: background-color on section selector */
+.reveal .slides section.slide-dark {
+  background-color: #1a1a2e;
+}

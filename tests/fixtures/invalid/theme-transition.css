@@ -1,0 +1,24 @@
+/* WARN: transition on elements that could conflict with auto-animate */
+.mood-bar {
+  transition: width 0.8s ease, background 0.8s ease;
+}
+
+.ink-tag {
+  transition: all 0.3s ease;
+}
+
+/* WARN: dead keyframes — not used anywhere */
+@keyframes fadeInSlow {
+  from { opacity: 0; transform: translateY(20px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+/* This one IS used — should NOT trigger */
+@keyframes kenBurns {
+  from { transform: scale(1); }
+  to { transform: scale(1.08); }
+}
+
+.photo-bg {
+  animation: kenBurns 20s ease-in-out infinite alternate;
+}

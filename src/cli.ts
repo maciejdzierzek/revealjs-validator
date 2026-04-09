@@ -3,12 +3,14 @@
 import { readFileSync, existsSync } from 'fs';
 import { resolve, relative } from 'path';
 import { glob } from './glob.js';
-import { validate } from './index.js';
+import { validate, validateCSS } from './index.js';
 import { loadConfig } from './config.js';
 import { format } from './reporter.js';
 import { getRegisteredRules } from './rules/index.js';
+import { getRegisteredCSSRules } from './rules/css-index.js';
 import type { OutputFormat } from './reporter.js';
 import type { ValidationResult } from './rules/index.js';
+import type { CSSValidationResult } from './rules/css-index.js';
 
 function printHelp(): void {
   console.log(`
@@ -24,8 +26,11 @@ Options:
   --help, -h        Show this help message
   --version, -v     Show version
 
+Supports both HTML slide files and CSS theme files.
+
 Examples:
   revealjs-validator "slides/*.html"
+  revealjs-validator "slides/*.html" "theme/*.css"
   revealjs-validator --format json "slides/**/*.html"
   revealjs-validator --config my-config.json slides/
 `.trim());
@@ -37,9 +42,22 @@ function printVersion(): void {
 }
 
 function listRules(): void {
-  const rules = getRegisteredRules();
-  console.log(`Available rules (${rules.length}):\n`);
-  for (const rule of rules) {
+  const htmlRules = getRegisteredRules();
+  const cssRules = getRegisteredCSSRules();
+  const total = htmlRules.length + cssRules.length;
+  console.log(`Available rules (${total}):\n`);
+
+  console.log('  HTML rules:\n');
+  for (const rule of htmlRules) {
+    const sev = rule.defaultSeverity.padEnd(5);
+    console.log(`  ${sev}  ${rule.id}`);
+    console.log(`         ${rule.description}`);
+    console.log(`         Ref: ${rule.docsReference}`);
+    console.log('');
+  }
+
+  console.log('  CSS rules:\n');
+  for (const rule of cssRules) {
     const sev = rule.defaultSeverity.padEnd(5);
     console.log(`  ${sev}  ${rule.id}`);
     console.log(`         ${rule.description}`);
@@ -125,15 +143,22 @@ async function main(): Promise<void> {
     process.exit(1);
   }
 
-  const results: { file: string; result: ValidationResult }[] = [];
+  const results: { file: string; result: ValidationResult | CSSValidationResult }[] = [];
   let hasErrors = false;
 
   for (const file of resolvedFiles) {
-    const html = readFileSync(file, 'utf-8');
-    const result = validate(html, { rules: config.rules });
+    const content = readFileSync(file, 'utf-8');
     const relPath = relative(process.cwd(), file);
-    results.push({ file: relPath, result });
-    if (!result.passed) hasErrors = true;
+
+    if (file.endsWith('.css')) {
+      const result = validateCSS(content, { rules: config.rules });
+      results.push({ file: relPath, result });
+      if (!result.passed) hasErrors = true;
+    } else {
+      const result = validate(content, { rules: config.rules });
+      results.push({ file: relPath, result });
+      if (!result.passed) hasErrors = true;
+    }
   }
 
   console.log(format(results, args.outputFormat));

@@ -1,0 +1,36 @@
+/* Valid theme — no background on .reveal, no conflicting transitions */
+:root {
+  --color-background: #080810;
+  --color-foreground: #f0f0f0;
+  --font-body: 'Nunito Sans', system-ui, sans-serif;
+}
+
+.reveal {
+  font-family: var(--font-body);
+  font-size: 44px;
+  color: var(--color-foreground);
+}
+
+.reveal .slides section {
+  text-align: left;
+}
+
+.reveal h1, .reveal h2, .reveal h3 {
+  color: var(--color-foreground);
+  text-transform: none;
+}
+
+/* Transition on pseudo-element — OK */
+.reveal .slides section .btn::after {
+  transition: opacity 0.3s ease;
+}
+
+/* Keyframes used by animation */
+@keyframes kenBurns {
+  from { transform: scale(1); }
+  to { transform: scale(1.08); }
+}
+
+.photo-bg {
+  animation: kenBurns 20s ease-in-out infinite alternate;
+}

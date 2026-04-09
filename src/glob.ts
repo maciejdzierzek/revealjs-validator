@@ -20,8 +20,11 @@ export async function glob(
       try {
         const stat = statSync(full);
         if (stat.isDirectory()) {
-          const expanded = expandGlob(join(pattern, '**/*.html'));
-          for (const f of expanded) files.add(f);
+          // When given a directory, find both HTML and CSS files
+          for (const ext of ['**/*.html', '**/*.css']) {
+            const expanded = expandGlob(join(pattern, ext));
+            for (const f of expanded) files.add(f);
+          }
         } else {
           files.add(full);
         }
