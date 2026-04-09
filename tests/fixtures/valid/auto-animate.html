@@ -1,39 +1,39 @@
 <div class="reveal">
   <div class="slides">
     <!-- Correct: auto-animate pair -->
-    <section data-auto-animate>
+    <section data-background-color="#000" data-auto-animate>
       <h1 style="font-size: 2em;">Title</h1>
     </section>
-    <section data-auto-animate>
+    <section data-background-color="#000" data-auto-animate>
       <h1 style="font-size: 1em; color: red;">Title</h1>
     </section>
 
     <!-- Correct: data-id with inline styles -->
-    <section data-auto-animate>
+    <section data-background-color="#000" data-auto-animate>
       <div data-id="box" style="width: 100px; height: 100px; background: blue;"></div>
     </section>
-    <section data-auto-animate>
+    <section data-background-color="#000" data-auto-animate>
       <div data-id="box" style="width: 200px; height: 200px; background: red;"></div>
     </section>
 
     <!-- Correct: grouped auto-animate -->
-    <section data-auto-animate data-auto-animate-id="group-a">
+    <section data-background-color="#000" data-auto-animate data-auto-animate-id="group-a">
       <p style="opacity: 1;">Group A</p>
     </section>
-    <section data-auto-animate data-auto-animate-id="group-a">
+    <section data-background-color="#000" data-auto-animate data-auto-animate-id="group-a">
       <p style="opacity: 0.5;">Group A faded</p>
     </section>
 
     <!-- Correct: auto-animate-restart with auto-animate -->
-    <section data-auto-animate data-auto-animate-restart>
+    <section data-background-color="#000" data-auto-animate data-auto-animate-restart>
       <p style="font-size: 1em;">Fresh start</p>
     </section>
-    <section data-auto-animate>
+    <section data-background-color="#000" data-auto-animate>
       <p style="font-size: 2em;">Fresh start bigger</p>
     </section>
 
     <!-- Correct: non-auto-animate slide, no data-id -->
-    <section>
+    <section data-background-color="#000">
       <h2>Normal slide</h2>
     </section>
   </div>

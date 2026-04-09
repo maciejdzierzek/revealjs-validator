@@ -1,5 +1,15 @@
 # Changelog
 
+## 0.3.0 (2026-04-09)
+
+### Added
+- **5 new HTML rules** — catches more real-world mistakes
+  - `valid-autoslide-value` — `data-autoslide` must be numeric (milliseconds)
+  - `vertical-slides-nesting` — no triple-nested `<section>` elements
+  - `markdown-requires-script` — `data-markdown` needs `<script type="text/template">`
+  - `code-line-numbers-structure` — `data-line-numbers` must be on `<code>` inside `<pre>`
+  - `missing-slide-background` — slides without any `data-background-*` get wrong navigation arrow colors
+
 ## 0.2.0 (2026-04-09)
 
 ### Added

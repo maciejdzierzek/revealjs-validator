@@ -207,9 +207,49 @@ const backgroundInteractiveRequiresIframe: Rule = {
   },
 };
 
+// ---------------------------------------------------------------------------
+// Rule: missing-slide-background
+//
+// Source: docs/source/backgrounds.md
+// "Slides are contained within a limited portion of the screen by default."
+// Without data-background-* AND without CSS background on .reveal, a slide
+// gets the browser default white background. After fixing
+// css-no-background-on-reveal, slides that relied on CSS background
+// will turn white. Every slide should explicitly declare its background.
+//
+// Also: Reveal.js uses data-background-color to detect luminance and
+// toggle has-dark-background / has-light-background classes. Without it,
+// navigation arrows may be invisible.
+// ---------------------------------------------------------------------------
+const missingSlideBackground: Rule = {
+  id: 'missing-slide-background',
+  category: 'backgrounds',
+  defaultSeverity: 'warn',
+  description:
+    'Slide has no data-background-* attribute. Without it, Reveal.js cannot detect luminance (navigation arrows may be wrong color) and the background defaults to white.',
+  docsReference: 'backgrounds.md — "adding a data-background attribute to your <section> elements"',
+  check(parsed: ParseResult): Violation[] {
+    const violations: Violation[] = [];
+    forEachLeafSlide(parsed, (slide) => {
+      const attrs = Object.keys(slide.element.attributes);
+      const hasAnyBackground = attrs.some((a) => a.startsWith('data-background'));
+      if (!hasAnyBackground) {
+        violations.push({
+          ruleId: 'missing-slide-background',
+          message:
+            'Slide has no data-background-* attribute. Add at least data-background-color so Reveal.js can detect luminance and set correct navigation arrow color.',
+          slideIndex: slide.index,
+        });
+      }
+    });
+    return violations;
+  },
+};
+
 // Register all background rules
 registerRule(noCssBackgroundOnSection);
 registerRule(validBackgroundAttributes);
 registerRule(backgroundOpacityRange);
 registerRule(backgroundVideoFlags);
 registerRule(backgroundInteractiveRequiresIframe);
+registerRule(missingSlideBackground);
