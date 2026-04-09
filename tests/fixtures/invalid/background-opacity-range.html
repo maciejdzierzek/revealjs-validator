@@ -1,0 +1,18 @@
+<div class="reveal">
+  <div class="slides">
+    <!-- ERROR: opacity > 1 -->
+    <section data-background-color="#000" data-background-opacity="1.5">
+      <h2>Bad: opacity too high</h2>
+    </section>
+
+    <!-- ERROR: opacity < 0 -->
+    <section data-background-color="#000" data-background-opacity="-0.1">
+      <h2>Bad: opacity negative</h2>
+    </section>
+
+    <!-- ERROR: opacity not a number -->
+    <section data-background-color="#000" data-background-opacity="half">
+      <h2>Bad: opacity not numeric</h2>
+    </section>
+  </div>
+</div>

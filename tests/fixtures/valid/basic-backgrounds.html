@@ -1,0 +1,47 @@
+<div class="reveal">
+  <div class="slides">
+    <!-- Color background via attribute — correct -->
+    <section data-background-color="aquamarine">
+      <h2>Color Background</h2>
+    </section>
+
+    <!-- Gradient background via attribute — correct -->
+    <section data-background-gradient="linear-gradient(to bottom, #283b95, #17b2c3)">
+      <h2>Gradient Background</h2>
+    </section>
+
+    <!-- Image background with options — correct -->
+    <section data-background-image="img/bg.jpg"
+             data-background-size="cover"
+             data-background-position="center"
+             data-background-opacity="0.5">
+      <h2>Image Background</h2>
+    </section>
+
+    <!-- Video background with flags — correct -->
+    <section data-background-video="video.mp4"
+             data-background-video-loop
+             data-background-video-muted>
+      <h2>Video Background</h2>
+    </section>
+
+    <!-- Iframe background with interactive — correct -->
+    <section data-background-iframe="https://example.com"
+             data-background-interactive>
+      <h2>Interactive Iframe</h2>
+    </section>
+
+    <!-- No background at all — also valid -->
+    <section>
+      <h2>Plain Slide</h2>
+    </section>
+
+    <!-- Opacity at boundaries — valid -->
+    <section data-background-color="#000" data-background-opacity="0">
+      <h2>Opacity 0</h2>
+    </section>
+    <section data-background-color="#000" data-background-opacity="1">
+      <h2>Opacity 1</h2>
+    </section>
+  </div>
+</div>

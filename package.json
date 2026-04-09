@@ -1,0 +1,58 @@
+{
+  "name": "revealjs-validator",
+  "version": "0.1.0",
+  "description": "Static HTML validator for Reveal.js presentations. Checks slides against official Reveal.js documentation rules.",
+  "type": "module",
+  "bin": {
+    "revealjs-validator": "./dist/cli.js"
+  },
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.js",
+      "require": "./dist/index.cjs"
+    }
+  },
+  "main": "./dist/index.cjs",
+  "module": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "files": [
+    "dist",
+    "docs/source"
+  ],
+  "scripts": {
+    "build": "tsup",
+    "test": "vitest run",
+    "test:watch": "vitest",
+    "lint": "eslint src/",
+    "typecheck": "tsc --noEmit",
+    "prepublishOnly": "npm run build"
+  },
+  "keywords": [
+    "revealjs",
+    "reveal.js",
+    "validator",
+    "linter",
+    "slides",
+    "presentation",
+    "html"
+  ],
+  "author": "Maciej Dzierzek",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/maciejdzierzek/revealjs-validator.git"
+  },
+  "engines": {
+    "node": ">=20.0.0"
+  },
+  "dependencies": {
+    "node-html-parser": "^7.0.1"
+  },
+  "devDependencies": {
+    "@types/node": "^25.5.2",
+    "tsup": "^8.4.0",
+    "typescript": "^5.8.0",
+    "vitest": "^3.1.0"
+  }
+}

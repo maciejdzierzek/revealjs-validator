@@ -1,0 +1,58 @@
+import type { Violation, ValidationResult } from './rules/index.js';
+
+export type OutputFormat = 'text' | 'json';
+
+interface FileResult {
+  file: string;
+  result: ValidationResult;
+}
+
+function formatViolation(file: string, v: Violation, symbol: string): string {
+  const loc = `slide ${v.slideIndex + 1}`;
+  const ctx = v.context ? ` (${v.context})` : '';
+  return `  ${symbol} ${file}:${loc} [${v.ruleId}] ${v.message}${ctx}`;
+}
+
+export function formatText(results: FileResult[]): string {
+  const lines: string[] = [];
+  let totalErrors = 0;
+  let totalWarnings = 0;
+
+  for (const { file, result } of results) {
+    for (const err of result.errors) {
+      lines.push(formatViolation(file, err, '\u2717'));
+      totalErrors++;
+    }
+    for (const warn of result.warnings) {
+      lines.push(formatViolation(file, warn, '\u26A0'));
+      totalWarnings++;
+    }
+  }
+
+  lines.push('');
+  const fileCount = results.length;
+  const parts = [`${fileCount} file${fileCount !== 1 ? 's' : ''}`];
+  if (totalErrors > 0) parts.push(`${totalErrors} error${totalErrors !== 1 ? 's' : ''}`);
+  if (totalWarnings > 0) parts.push(`${totalWarnings} warning${totalWarnings !== 1 ? 's' : ''}`);
+  if (totalErrors === 0 && totalWarnings === 0) parts.push('all clean');
+  lines.push(parts.join(', '));
+
+  return lines.join('\n');
+}
+
+export function formatJSON(results: FileResult[]): string {
+  return JSON.stringify(
+    results.map(({ file, result }) => ({
+      file,
+      errors: result.errors,
+      warnings: result.warnings,
+      passed: result.passed,
+    })),
+    null,
+    2,
+  );
+}
+
+export function format(results: FileResult[], outputFormat: OutputFormat): string {
+  return outputFormat === 'json' ? formatJSON(results) : formatText(results);
+}

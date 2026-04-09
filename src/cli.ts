@@ -1,0 +1,146 @@
+#!/usr/bin/env node
+
+import { readFileSync, existsSync } from 'fs';
+import { resolve, relative } from 'path';
+import { glob } from './glob.js';
+import { validate } from './index.js';
+import { loadConfig } from './config.js';
+import { format } from './reporter.js';
+import { getRegisteredRules } from './rules/index.js';
+import type { OutputFormat } from './reporter.js';
+import type { ValidationResult } from './rules/index.js';
+
+function printHelp(): void {
+  console.log(`
+revealjs-validator - Static HTML validator for Reveal.js presentations
+
+Usage:
+  revealjs-validator [options] <files...>
+
+Options:
+  --config <path>   Path to config file (default: .revealjs-validator.json)
+  --format <type>   Output format: text, json (default: text)
+  --list-rules      List all available rules and exit
+  --help, -h        Show this help message
+  --version, -v     Show version
+
+Examples:
+  revealjs-validator "slides/*.html"
+  revealjs-validator --format json "slides/**/*.html"
+  revealjs-validator --config my-config.json slides/
+`.trim());
+}
+
+function printVersion(): void {
+  const pkg = JSON.parse(readFileSync(new URL('../package.json', import.meta.url), 'utf-8'));
+  console.log(pkg.version);
+}
+
+function listRules(): void {
+  const rules = getRegisteredRules();
+  console.log(`Available rules (${rules.length}):\n`);
+  for (const rule of rules) {
+    const sev = rule.defaultSeverity.padEnd(5);
+    console.log(`  ${sev}  ${rule.id}`);
+    console.log(`         ${rule.description}`);
+    console.log(`         Ref: ${rule.docsReference}`);
+    console.log('');
+  }
+}
+
+function parseArgs(argv: string[]): {
+  files: string[];
+  configPath?: string;
+  outputFormat: OutputFormat;
+  help: boolean;
+  version: boolean;
+  listRulesFlag: boolean;
+} {
+  const files: string[] = [];
+  let configPath: string | undefined;
+  let outputFormat: OutputFormat = 'text';
+  let help = false;
+  let version = false;
+  let listRulesFlag = false;
+
+  let i = 0;
+  while (i < argv.length) {
+    const arg = argv[i];
+    if (arg === '--help' || arg === '-h') {
+      help = true;
+    } else if (arg === '--version' || arg === '-v') {
+      version = true;
+    } else if (arg === '--list-rules') {
+      listRulesFlag = true;
+    } else if (arg === '--config' && i + 1 < argv.length) {
+      configPath = argv[++i];
+    } else if (arg === '--format' && i + 1 < argv.length) {
+      const fmt = argv[++i];
+      if (fmt === 'text' || fmt === 'json') {
+        outputFormat = fmt;
+      } else {
+        console.error(`Unknown format: ${fmt}. Use "text" or "json".`);
+        process.exit(1);
+      }
+    } else if (!arg.startsWith('-')) {
+      files.push(arg);
+    } else {
+      console.error(`Unknown option: ${arg}`);
+      process.exit(1);
+    }
+    i++;
+  }
+
+  return { files, configPath, outputFormat, help, version, listRulesFlag };
+}
+
+async function main(): Promise<void> {
+  const args = parseArgs(process.argv.slice(2));
+
+  if (args.help) {
+    printHelp();
+    process.exit(0);
+  }
+  if (args.version) {
+    printVersion();
+    process.exit(0);
+  }
+  if (args.listRulesFlag) {
+    listRules();
+    process.exit(0);
+  }
+
+  if (args.files.length === 0) {
+    console.error('Error: No files specified. Run with --help for usage.');
+    process.exit(1);
+  }
+
+  const config = loadConfig(args.configPath);
+
+  // Expand globs
+  const resolvedFiles = await glob(args.files, config.ignore);
+
+  if (resolvedFiles.length === 0) {
+    console.error('Error: No matching files found.');
+    process.exit(1);
+  }
+
+  const results: { file: string; result: ValidationResult }[] = [];
+  let hasErrors = false;
+
+  for (const file of resolvedFiles) {
+    const html = readFileSync(file, 'utf-8');
+    const result = validate(html, { rules: config.rules });
+    const relPath = relative(process.cwd(), file);
+    results.push({ file: relPath, result });
+    if (!result.passed) hasErrors = true;
+  }
+
+  console.log(format(results, args.outputFormat));
+  process.exit(hasErrors ? 1 : 0);
+}
+
+main().catch((err) => {
+  console.error(err.message || err);
+  process.exit(1);
+});
