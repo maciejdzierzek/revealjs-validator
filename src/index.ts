@@ -29,6 +29,8 @@ import './rules/extras.js';
 import './rules/config-rules.js';
 import './rules/cross-file/auto-animate-pairs.js';
 import './rules/cross-file/css-classes.js';
+import './rules/cross-file/missing-bg-with-css.js';
+import './rules/cross-file/assets-exist.js';
 
 export { parseSlides } from './parser.js';
 export { parseRevealConfig } from './config-validator.js';

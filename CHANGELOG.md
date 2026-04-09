@@ -1,5 +1,11 @@
 # Changelog
 
+## 0.11.0 (2026-04-09)
+
+### Added
+- **`cross-missing-bg-with-css`** — detects slides without `data-background-*` when CSS theme has no global background (slide will be white). Also warns when slides rely on CSS global background (fragile — will break when CSS is fixed).
+- **`cross-assets-exist`** — checks that asset paths in slides (`src`, `data-src`, `data-background-image`, `data-background-video`, `data-preview-image`) exist on disk. Resolves absolute paths from server root and relative paths from game directory. Skips URLs and data URIs.
+
 ## 0.10.0 (2026-04-09)
 
 ### Added
