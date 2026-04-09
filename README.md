@@ -34,6 +34,20 @@ npx revealjs-validator --config .revealjs-validator.json "slides/*.html"
 npx revealjs-validator --list-rules
 ```
 
+### Game mode (cross-file validation)
+
+Validate an entire presentation directory — checks relationships between slides, CSS, and config:
+
+```bash
+npx revealjs-validator --game path/to/presentation/
+```
+
+Auto-detects `config.json` with a `slides` array. Falls back to alphabetical `.html` files in `slides/`.
+
+Cross-file checks:
+- **Auto-animate pairs** — validates `data-auto-animate` and `data-id` continuity between consecutive slides (chains supported)
+- *(More cross-file rules coming: CSS class cross-check, asset existence, missing backgrounds)*
+
 ### Programmatic API
 
 ```typescript

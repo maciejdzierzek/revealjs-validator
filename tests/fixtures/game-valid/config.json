@@ -1,0 +1,13 @@
+{
+  "slides": [
+    { "id": "intro", "file": "slides/intro.html" },
+    { "id": "s01", "file": "slides/s01.html" },
+    { "id": "s02", "file": "slides/s02.html" },
+    { "id": "s03", "file": "slides/s03.html" }
+  ],
+  "reveal": {
+    "transition": "fade",
+    "width": 1280,
+    "height": 720
+  }
+}

@@ -2,9 +2,27 @@ import { readFileSync, existsSync } from 'fs';
 import { resolve } from 'path';
 import type { RuleConfig } from './rules/index.js';
 
+export interface CrosscheckConfig {
+  'auto-animate-pairs'?: boolean;
+  'css-classes-used'?: boolean;
+  'css-classes-defined'?: boolean;
+  'missing-background-with-css'?: boolean;
+  'assets-exist'?: boolean;
+  'ignore-class-prefixes'?: string[];
+}
+
+export interface GameConfig {
+  /** Key in config.json containing slides array (default: "slides") */
+  slidesKey?: string;
+  /** Field name in each slide entry for file path (default: "file") */
+  fileField?: string;
+}
+
 export interface ValidatorConfig {
   rules?: RuleConfig;
   ignore?: string[];
+  crosscheck?: CrosscheckConfig;
+  game?: GameConfig;
 }
 
 const CONFIG_FILENAMES = [

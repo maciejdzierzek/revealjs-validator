@@ -3,7 +3,7 @@
 import { readFileSync, existsSync } from 'fs';
 import { resolve, relative } from 'path';
 import { glob } from './glob.js';
-import { validate, validateCSS, validateConfigFile } from './index.js';
+import { validate, validateCSS, validateConfigFile, validateGame } from './index.js';
 import { loadConfig } from './config.js';
 import { format } from './reporter.js';
 import { getRegisteredRules } from './rules/index.js';
@@ -29,6 +29,7 @@ Options:
   --staged          Validate only git-staged .html and .css files (for pre-commit hooks)
   --fix             Auto-fix violations where possible (modifies files in-place)
   --dry-run         With --fix: show what would be fixed without modifying files
+  --game <dir>      Validate entire game directory with cross-file checks
   --reveal-key <p>  JSON path to Reveal.js config (default: auto-detect "reveal" key)
   --list-rules      List all available rules and exit
   --help, -h        Show this help message
@@ -39,6 +40,7 @@ Supports both HTML slide files and CSS theme files.
 Examples:
   revealjs-validator "slides/*.html"
   revealjs-validator "slides/*.html" "theme/*.css"
+  revealjs-validator --game games/my-presentation/     # cross-file validation
   revealjs-validator --staged                          # pre-commit hook
   revealjs-validator --format json "slides/**/*.html"
   revealjs-validator --config my-config.json slides/
@@ -96,6 +98,7 @@ function parseArgs(argv: string[]): {
   fix: boolean;
   dryRun: boolean;
   revealKey?: string;
+  gameDir?: string;
 } {
   const files: string[] = [];
   let configPath: string | undefined;
@@ -107,6 +110,7 @@ function parseArgs(argv: string[]): {
   let fix = false;
   let dryRun = false;
   let revealKey: string | undefined;
+  let gameDir: string | undefined;
 
   let i = 0;
   while (i < argv.length) {
@@ -123,6 +127,8 @@ function parseArgs(argv: string[]): {
       fix = true;
     } else if (arg === '--dry-run') {
       dryRun = true;
+    } else if (arg === '--game' && i + 1 < argv.length) {
+      gameDir = argv[++i];
     } else if (arg === '--reveal-key' && i + 1 < argv.length) {
       revealKey = argv[++i];
     } else if (arg === '--config' && i + 1 < argv.length) {
@@ -144,7 +150,7 @@ function parseArgs(argv: string[]): {
     i++;
   }
 
-  return { files, configPath, outputFormat, help, version, listRulesFlag, staged, fix, dryRun, revealKey };
+  return { files, configPath, outputFormat, help, version, listRulesFlag, staged, fix, dryRun, revealKey, gameDir };
 }
 
 async function main(): Promise<void> {
@@ -163,12 +169,56 @@ async function main(): Promise<void> {
     process.exit(0);
   }
 
+  const config = loadConfig(args.configPath);
+
+  // --game mode: validate entire game directory with cross-file checks
+  if (args.gameDir) {
+    const result = validateGame(args.gameDir, config);
+    const lines: string[] = [];
+
+    // Per-file violations
+    for (const { file, result: r } of result.perFileResults) {
+      for (const err of r.errors) {
+        const ctx = err.context ? ` (${err.context})` : '';
+        lines.push(`  \u2717 ${file}:slide ${err.slideIndex + 1} [${err.ruleId}] ${err.message}${ctx}`);
+      }
+      for (const warn of r.warnings) {
+        const ctx = warn.context ? ` (${warn.context})` : '';
+        lines.push(`  \u26A0 ${file}:slide ${warn.slideIndex + 1} [${warn.ruleId}] ${warn.message}${ctx}`);
+      }
+    }
+    for (const { file, result: r } of result.perFileCSSResults) {
+      for (const err of r.errors) lines.push(`  \u2717 ${file}:line ${err.line} [${err.ruleId}] ${err.message}`);
+      for (const warn of r.warnings) lines.push(`  \u26A0 ${file}:line ${warn.line} [${warn.ruleId}] ${warn.message}`);
+    }
+    if (result.configResult) {
+      for (const err of result.configResult.errors) lines.push(`  \u2717 config.json [${err.ruleId}] ${err.message}`);
+      for (const warn of result.configResult.warnings) lines.push(`  \u26A0 config.json [${warn.ruleId}] ${warn.message}`);
+    }
+
+    // Cross-file violations
+    for (const err of result.crossFileResult.errors) {
+      lines.push(`  \u2717 ${err.file} [${err.ruleId}] ${err.message}`);
+    }
+    for (const warn of result.crossFileResult.warnings) {
+      lines.push(`  \u26A0 ${warn.file} [${warn.ruleId}] ${warn.message}`);
+    }
+
+    if (lines.length > 0) console.log(lines.join('\n'));
+    console.log('');
+    const totalFiles = result.game.slides.length + result.game.cssFiles.length + (result.game.configPath ? 1 : 0);
+    const parts = [`${totalFiles} files`];
+    if (result.totalErrors > 0) parts.push(`${result.totalErrors} error${result.totalErrors !== 1 ? 's' : ''}`);
+    if (result.totalWarnings > 0) parts.push(`${result.totalWarnings} warning${result.totalWarnings !== 1 ? 's' : ''}`);
+    if (result.totalErrors === 0 && result.totalWarnings === 0) parts.push('all clean');
+    console.log(parts.join(', '));
+    process.exit(result.passed ? 0 : 1);
+  }
+
   if (!args.staged && args.files.length === 0) {
     console.error('Error: No files specified. Run with --help for usage.');
     process.exit(1);
   }
-
-  const config = loadConfig(args.configPath);
 
   // Resolve files: --staged from git, otherwise from globs
   let resolvedFiles: string[];

@@ -1,13 +1,18 @@
 import { readFileSync } from 'fs';
 import { parseSlides } from './parser.js';
 import { parseCSS } from './css-parser.js';
+import { loadGame } from './game-loader.js';
 import { runRules } from './rules/index.js';
 import { runCSSRules } from './rules/css-index.js';
 import { runConfigRules } from './rules/config-index.js';
+import { runCrossFileRules } from './rules/cross-file/index.js';
 import { parseRevealConfig } from './config-validator.js';
 import type { RuleConfig, ValidationResult } from './rules/index.js';
 import type { CSSValidationResult } from './rules/css-index.js';
 import type { ConfigValidationResult } from './rules/config-index.js';
+import type { CrossFileResult, CrossFileContext } from './rules/cross-file/index.js';
+import type { ValidatorConfig } from './config.js';
+import type { GameContext } from './game-loader.js';
 
 // Import rule modules to trigger registration
 import './rules/backgrounds.js';
@@ -22,15 +27,20 @@ import './rules/attributes.js';
 import './rules/links.js';
 import './rules/extras.js';
 import './rules/config-rules.js';
+import './rules/cross-file/auto-animate-pairs.js';
 
 export { parseSlides } from './parser.js';
 export { parseRevealConfig } from './config-validator.js';
+export { loadGame } from './game-loader.js';
+export type { GameContext, SlideEntry } from './game-loader.js';
 export { fixFile, fixHTMLSource, fixCSSSource } from './fixer.js';
 export type { FixResult } from './fixer.js';
 export { parseCSS } from './css-parser.js';
 export { runRules, getRegisteredRules } from './rules/index.js';
 export { runCSSRules, getRegisteredCSSRules } from './rules/css-index.js';
 export { runConfigRules, getRegisteredConfigRules } from './rules/config-index.js';
+export { runCrossFileRules, getRegisteredCrossFileRules } from './rules/cross-file/index.js';
+export type { CrossFileRule, CrossFileViolation, CrossFileResult, CrossFileContext } from './rules/cross-file/index.js';
 export type { Rule, Violation, ValidationResult, RuleConfig, Severity } from './rules/index.js';
 export type { CSSValidationRule, CSSViolation, CSSValidationResult } from './rules/css-index.js';
 export type { ConfigRule, ConfigViolation, ConfigValidationResult } from './rules/config-index.js';
@@ -103,4 +113,110 @@ export function validateConfigFile(
   const json = readFileSync(filePath, 'utf-8');
   const revealConfig = parseRevealConfig(json, revealKey);
   return validateConfig(revealConfig, config);
+}
+
+/**
+ * Validate an entire game directory with cross-file checks.
+ * Runs per-file validation on each slide/CSS + cross-file rules.
+ */
+export function validateGame(
+  gameDir: string,
+  validatorConfig?: ValidatorConfig,
+): GameValidationResult {
+  const game = loadGame(gameDir, validatorConfig);
+  const ruleConfig = validatorConfig?.rules ?? {};
+
+  // Auto-disable per-file rules that cross-file replaces
+  const adjustedRuleConfig: RuleConfig = {
+    ...ruleConfig,
+    'auto-animate-pairs': 'off',
+    'data-id-needs-auto-animate': 'off',
+  };
+
+  // Parse all slides
+  const parsedSlides = game.slides.map((entry) => {
+    const html = readFileSync(entry.absolutePath, 'utf-8');
+    return {
+      file: entry.file,
+      slideId: entry.id,
+      parsed: parseSlides(html),
+    };
+  });
+
+  // Parse all CSS
+  const parsedCSS = game.cssFiles.map((file) => {
+    const css = readFileSync(file, 'utf-8');
+    return {
+      file: file.replace(game.dir + '/', ''),
+      parsed: parseCSS(css),
+    };
+  });
+
+  // Per-file HTML validation
+  const perFileResults: { file: string; result: ValidationResult }[] = [];
+  for (const slide of parsedSlides) {
+    const result = runRules(slide.parsed, adjustedRuleConfig);
+    perFileResults.push({ file: slide.file, result });
+  }
+
+  // Per-file CSS validation
+  const perFileCSSResults: { file: string; result: CSSValidationResult }[] = [];
+  for (const css of parsedCSS) {
+    const result = runCSSRules(css.parsed, adjustedRuleConfig);
+    perFileCSSResults.push({ file: css.file, result });
+  }
+
+  // Config validation
+  let configResult: ConfigValidationResult | null = null;
+  if (game.revealConfig) {
+    configResult = runConfigRules(game.revealConfig, ruleConfig);
+  }
+
+  // Cross-file validation
+  const crossFileCtx: CrossFileContext = {
+    game,
+    slides: parsedSlides,
+    css: parsedCSS,
+  };
+  const crossFileResult = runCrossFileRules(
+    crossFileCtx,
+    ruleConfig,
+    validatorConfig?.crosscheck ?? {},
+  );
+
+  // Aggregate
+  const allErrors = [
+    ...perFileResults.flatMap((r) => r.result.errors.map((e) => ({ ...e, _file: r.file }))),
+    ...perFileCSSResults.flatMap((r) => r.result.errors.map((e) => ({ ...e, _file: r.file }))),
+    ...(configResult?.errors.map((e) => ({ ...e, _file: 'config.json' })) ?? []),
+    ...crossFileResult.errors,
+  ];
+  const allWarnings = [
+    ...perFileResults.flatMap((r) => r.result.warnings.map((e) => ({ ...e, _file: r.file }))),
+    ...perFileCSSResults.flatMap((r) => r.result.warnings.map((e) => ({ ...e, _file: r.file }))),
+    ...(configResult?.warnings.map((e) => ({ ...e, _file: 'config.json' })) ?? []),
+    ...crossFileResult.warnings,
+  ];
+
+  return {
+    game,
+    perFileResults,
+    perFileCSSResults,
+    configResult,
+    crossFileResult,
+    totalErrors: allErrors.length,
+    totalWarnings: allWarnings.length,
+    passed: allErrors.length === 0,
+  };
+}
+
+export interface GameValidationResult {
+  game: GameContext;
+  perFileResults: { file: string; result: ValidationResult }[];
+  perFileCSSResults: { file: string; result: CSSValidationResult }[];
+  configResult: ConfigValidationResult | null;
+  crossFileResult: CrossFileResult;
+  totalErrors: number;
+  totalWarnings: number;
+  passed: boolean;
 }

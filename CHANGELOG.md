@@ -1,5 +1,16 @@
 # Changelog
 
+## 0.9.0 (2026-04-09)
+
+### Added
+- **`--game <dir>` mode** — cross-file validation for entire presentations
+  - Game loader: auto-detects `config.json` with slides array, falls back to alphabetical HTML
+  - Configurable via `.revealjs-validator.json` `game` section (`slidesKey`, `fileField`)
+  - Cross-file rule engine with `crosscheck` config section (each check toggleable)
+  - `cross-auto-animate-pairs` — validates auto-animate chain continuity between consecutive slides, data-id matching with inline style check
+  - Per-file `auto-animate-pairs` and `data-id-needs-auto-animate` auto-disabled in game mode (cross-file replaces them)
+- **Programmatic API** — `validateGame(dir, config)`
+
 ## 0.8.0 (2026-04-09)
 
 ### Added
