@@ -95,6 +95,51 @@ export function formatJSON(results: FileResult[]): string {
   );
 }
 
+export function formatSummary(results: FileResult[]): string {
+  const lines: string[] = [];
+  let totalErrors = 0;
+  let totalWarnings = 0;
+  const counts = new Map<string, { count: number; severity: 'error' | 'warn' }>();
+
+  for (const { result } of results) {
+    for (const err of result.errors) {
+      totalErrors++;
+      const entry = counts.get(err.ruleId) ?? { count: 0, severity: 'error' as const };
+      entry.count++;
+      counts.set(err.ruleId, entry);
+    }
+    for (const warn of result.warnings) {
+      totalWarnings++;
+      const entry = counts.get(warn.ruleId) ?? { count: 0, severity: 'warn' as const };
+      entry.count++;
+      counts.set(warn.ruleId, entry);
+    }
+  }
+
+  const fileCount = results.length;
+  lines.push(`revealjs-validator — ${fileCount} file${fileCount !== 1 ? 's' : ''}`);
+  lines.push('');
+
+  if (counts.size > 0) {
+    lines.push('  Top violations:');
+    const sorted = [...counts.entries()].sort((a, b) => b[1].count - a[1].count);
+    for (const [ruleId, { count, severity }] of sorted) {
+      const sev = severity === 'error' ? 'error' : 'warn';
+      lines.push(`    ${String(count).padStart(4)}  ${ruleId}  (${sev})`);
+    }
+    lines.push('');
+  }
+
+  const status = totalErrors > 0 ? 'FAIL' : 'PASS';
+  const parts: string[] = [];
+  if (totalErrors > 0) parts.push(`${totalErrors} error${totalErrors !== 1 ? 's' : ''}`);
+  if (totalWarnings > 0) parts.push(`${totalWarnings} warning${totalWarnings !== 1 ? 's' : ''}`);
+  if (totalErrors === 0 && totalWarnings === 0) parts.push('all clean');
+  lines.push(`  Result: ${status} (${parts.join(', ')})`);
+
+  return lines.join('\n');
+}
+
 export function format(results: FileResult[], outputFormat: OutputFormat): string {
   return outputFormat === 'json' ? formatJSON(results) : formatText(results);
 }

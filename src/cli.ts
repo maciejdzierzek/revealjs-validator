@@ -5,7 +5,7 @@ import { resolve, relative } from 'path';
 import { glob } from './glob.js';
 import { validate, validateCSS, validateConfigFile, validateProject } from './index.js';
 import { loadConfig } from './config.js';
-import { format } from './reporter.js';
+import { format, formatSummary } from './reporter.js';
 import { getRegisteredRules } from './rules/index.js';
 import { getRegisteredCSSRules } from './rules/css-index.js';
 import { getRegisteredConfigRules } from './rules/config-index.js';
@@ -30,6 +30,7 @@ Options:
   --fix             Auto-fix violations where possible (modifies files in-place)
   --dry-run         With --fix: show what would be fixed without modifying files
   --project <dir>      Validate entire project directory with cross-file checks
+  --summary         Show compact summary grouped by rule (instead of per-violation list)
   --reveal-key <p>  JSON path to Reveal.js config (default: auto-detect "reveal" key)
   --list-rules      List all available rules and exit
   --help, -h        Show this help message
@@ -97,6 +98,7 @@ function parseArgs(argv: string[]): {
   staged: boolean;
   fix: boolean;
   dryRun: boolean;
+  summary: boolean;
   revealKey?: string;
   projectDir?: string;
 } {
@@ -109,6 +111,7 @@ function parseArgs(argv: string[]): {
   let staged = false;
   let fix = false;
   let dryRun = false;
+  let summary = false;
   let revealKey: string | undefined;
   let projectDir: string | undefined;
 
@@ -127,6 +130,8 @@ function parseArgs(argv: string[]): {
       fix = true;
     } else if (arg === '--dry-run') {
       dryRun = true;
+    } else if (arg === '--summary') {
+      summary = true;
     } else if (arg === '--project' && i + 1 < argv.length) {
       projectDir = argv[++i];
     } else if (arg === '--reveal-key' && i + 1 < argv.length) {
@@ -150,7 +155,7 @@ function parseArgs(argv: string[]): {
     i++;
   }
 
-  return { files, configPath, outputFormat, help, version, listRulesFlag, staged, fix, dryRun, revealKey, projectDir };
+  return { files, configPath, outputFormat, help, version, listRulesFlag, staged, fix, dryRun, summary, revealKey, projectDir };
 }
 
 async function main(): Promise<void> {
@@ -174,6 +179,19 @@ async function main(): Promise<void> {
   // --project mode: validate entire project directory with cross-file checks
   if (args.projectDir) {
     const result = validateProject(args.projectDir, config);
+
+    if (args.summary) {
+      // Build unified result list for summary
+      const allResults: { file: string; result: { errors: any[]; warnings: any[]; passed: boolean } }[] = [
+        ...result.perFileResults,
+        ...result.perFileCSSResults,
+        ...(result.configResult ? [{ file: 'config.json', result: result.configResult }] : []),
+        { file: '(cross-file)', result: result.crossFileResult },
+      ];
+      console.log(formatSummary(allResults));
+      process.exit(result.passed ? 0 : 1);
+    }
+
     const lines: string[] = [];
 
     // Per-file violations
@@ -290,7 +308,11 @@ async function main(): Promise<void> {
     }
   }
 
-  console.log(format(results, args.outputFormat));
+  if (args.summary) {
+    console.log(formatSummary(results));
+  } else {
+    console.log(format(results, args.outputFormat));
+  }
   process.exit(hasErrors ? 1 : 0);
 }
 

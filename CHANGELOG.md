@@ -1,5 +1,10 @@
 # Changelog
 
+## 0.14.0 (2026-04-09)
+
+### Added
+- **`--summary` flag** — compact overview grouped by rule instead of per-violation list. Shows violation counts sorted by frequency, PASS/FAIL status. Works with both per-file and `--project` modes.
+
 ## 0.13.0 (2026-04-09)
 
 ### Added
