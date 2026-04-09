@@ -5,6 +5,9 @@ import type { RuleConfig, ValidationResult } from './rules/index.js';
 
 // Import rule modules to trigger registration
 import './rules/backgrounds.js';
+import './rules/auto-animate.js';
+import './rules/transitions.js';
+import './rules/fragments.js';
 
 export { parseSlides } from './parser.js';
 export { runRules, getRegisteredRules } from './rules/index.js';

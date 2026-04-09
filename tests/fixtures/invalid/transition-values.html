@@ -1,0 +1,23 @@
+<div class="reveal">
+  <div class="slides">
+    <!-- ERROR: invalid transition value -->
+    <section data-transition="dissolve">
+      <h2>Bad transition</h2>
+    </section>
+
+    <!-- ERROR: invalid transition speed -->
+    <section data-transition-speed="turbo">
+      <h2>Bad speed</h2>
+    </section>
+
+    <!-- ERROR: transition on non-section -->
+    <section>
+      <div data-transition="fade">Bad: on div</div>
+    </section>
+
+    <!-- ERROR: invalid background-transition -->
+    <section data-background-transition="wipe">
+      <h2>Bad bg transition</h2>
+    </section>
+  </div>
+</div>

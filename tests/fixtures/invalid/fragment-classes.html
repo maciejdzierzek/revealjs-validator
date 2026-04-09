@@ -1,0 +1,17 @@
+<div class="reveal">
+  <div class="slides">
+    <section>
+      <!-- ERROR: fade-out without fragment class -->
+      <p class="fade-out">Missing fragment class</p>
+
+      <!-- WARN: fragment-index without fragment class -->
+      <p data-fragment-index="1">No fragment class</p>
+
+      <!-- ERROR: non-numeric fragment-index -->
+      <p class="fragment" data-fragment-index="abc">Bad index</p>
+
+      <!-- ERROR: negative fragment-index -->
+      <p class="fragment" data-fragment-index="-1">Negative index</p>
+    </section>
+  </div>
+</div>

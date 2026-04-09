@@ -1,0 +1,34 @@
+<div class="reveal">
+  <div class="slides">
+    <!-- WARN: data-id without auto-animate on section -->
+    <section>
+      <div data-id="orphan">No auto-animate parent</div>
+    </section>
+
+    <!-- WARN: data-id without inline style in auto-animate slide -->
+    <section data-auto-animate>
+      <div data-id="no-style">Missing inline style</div>
+    </section>
+    <section data-auto-animate>
+      <div data-id="no-style">Still no style</div>
+    </section>
+
+    <!-- ERROR: data-auto-animate-delay on section -->
+    <section data-auto-animate data-auto-animate-delay="0.5">
+      <p style="font-size: 1em;">Delay on section</p>
+    </section>
+    <section data-auto-animate>
+      <p style="font-size: 2em;">Pair</p>
+    </section>
+
+    <!-- WARN: restart without auto-animate -->
+    <section data-auto-animate-restart>
+      <p>Restart but no auto-animate</p>
+    </section>
+
+    <!-- WARN: auto-animate-id without auto-animate -->
+    <section data-auto-animate-id="group-x">
+      <p>ID but no auto-animate</p>
+    </section>
+  </div>
+</div>
